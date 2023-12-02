@@ -15,7 +15,6 @@ class User extends \Core\Model
     public $name;
     public $password;
     public $email;
-    public $password_confirmation;
     public $password_hash;
 
 
@@ -158,4 +157,26 @@ class User extends \Core\Model
 
         return false;
     }
+}
+
+/**
+ * Find a user model by ID
+ *
+ * @param int $id User ID
+ *
+ * @return mixed User object if found, false otherwise
+ */
+  function findByID($id)
+{
+    $sql = 'SELECT * FROM users WHERE id = :id';
+
+    $db = static::getDB();
+    $stmt = $db->prepare($sql);
+    $stmt->bindValue(':id', $id, PDO::PARAM_INT);
+
+    $stmt->setFetchMode(PDO::FETCH_CLASS, get_called_class());
+
+    $stmt->execute();
+
+    return $stmt->fetch();
 }
