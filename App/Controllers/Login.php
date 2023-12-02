@@ -4,6 +4,8 @@ namespace App\Controllers;
 
 use \Core\View;
 use \App\Models\User;
+use \App\Auth;
+use \App\Flash;
 
 /**
  * Login controller
@@ -34,13 +36,15 @@ class Login extends \Core\Controller
 
         if ($user) {
 
-            session_regenerate_id(true);
+            Auth::login($user);
 
-            $_SESSION['user_id'] = $user->id;
+            Flash::addMessage('Login successful');
 
-            $this->redirect('/');
+            $this->redirect(Auth::getReturnToPage());
 
         } else {
+
+            Flash::addMessage('Login unsuccessful, please try again', Flash::WARNING);
 
             View::renderTemplate('Login/new.html', [
                 'email' => $_POST['email'],
@@ -55,26 +59,21 @@ class Login extends \Core\Controller
      */
     public function destroyAction()
     {
-        // Unset all of the session variables
-        $_SESSION = [];
+        Auth::logout();
 
-        // Delete the session cookie
-        if (ini_get('session.use_cookies')) {
-            $params = session_get_cookie_params();
+        $this->redirect('/login/show-logout-message');
+    }
 
-            setcookie(
-                session_name(),
-                '',
-                time() - 42000,
-                $params['path'],
-                $params['domain'],
-                $params['secure'],
-                $params['httponly']
-            );
-        }
-
-        // Finally destroy the session
-        session_destroy();
+    /**
+     * Show a "logged out" flash message and redirect to the homepage. Necessary to use the flash messages
+     * as they use the session and at the end of the logout method (destroyAction) the session is destroyed
+     * so a new action needs to be called in order to use the session.
+     *
+     * @return void
+     */
+    public function showLogoutMessageAction()
+    {
+        Flash::addMessage('Logout successful');
 
         $this->redirect('/');
     }
