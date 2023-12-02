@@ -17,8 +17,6 @@ class User extends \Core\Model
     public $email;
     public $password_hash;
 
-
-  
     /**
      * Error messages
      *
@@ -35,6 +33,8 @@ class User extends \Core\Model
      */
     public function __construct($data = [])
     {
+
+        
         foreach ($data as $key => $value) {
             $this->$key = $value;
         };
@@ -124,6 +124,8 @@ class User extends \Core\Model
      */
     public static function findByEmail($email)
     {
+    
+
         $sql = 'SELECT * FROM users WHERE email = :email';
 
         $db = static::getDB();
@@ -157,26 +159,26 @@ class User extends \Core\Model
 
         return false;
     }
-}
 
-/**
- * Find a user model by ID
- *
- * @param int $id User ID
- *
- * @return mixed User object if found, false otherwise
- */
-  function findByID($id)
-{
-    $sql = 'SELECT * FROM users WHERE id = :id';
+    /**
+     * Find a user model by ID
+     *
+     * @param string $id The user ID
+     *
+     * @return mixed User object if found, false otherwise
+     */
+    public static function findByID($id)
+    {
+        $sql = 'SELECT * FROM users WHERE id = :id';
 
-    $db = static::getDB();
-    $stmt = $db->prepare($sql);
-    $stmt->bindValue(':id', $id, PDO::PARAM_INT);
+        $db = static::getDB();
+        $stmt = $db->prepare($sql);
+        $stmt->bindValue(':id', $id, PDO::PARAM_INT);
 
-    $stmt->setFetchMode(PDO::FETCH_CLASS, get_called_class());
+        $stmt->setFetchMode(PDO::FETCH_CLASS, get_called_class());
 
-    $stmt->execute();
+        $stmt->execute();
 
-    return $stmt->fetch();
+        return $stmt->fetch();
+    }
 }
