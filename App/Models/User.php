@@ -3,6 +3,9 @@
 namespace App\Models;
 
 use PDO;
+use \App\Token;
+use \App\Mail;
+use \Core\View;
 
 /**
  * User model
@@ -16,6 +19,14 @@ class User extends \Core\Model
     public $password;
     public $email;
     public $password_hash;
+    public $remember_token;
+    public $expiry_timestamp;
+    public $password_reset_token;
+    public $password_reset_hash;
+    public $password_reset_expires_at;
+
+
+
 
     /**
      * Error messages
@@ -33,8 +44,6 @@ class User extends \Core\Model
      */
     public function __construct($data = [])
     {
-
-        
         foreach ($data as $key => $value) {
             $this->$key = $value;
         };
@@ -124,8 +133,6 @@ class User extends \Core\Model
      */
     public static function findByEmail($email)
     {
-    
-
         $sql = 'SELECT * FROM users WHERE email = :email';
 
         $db = static::getDB();
@@ -180,5 +187,96 @@ class User extends \Core\Model
         $stmt->execute();
 
         return $stmt->fetch();
+    }
+
+    /**
+     * Remember the login by inserting a new unique token into the remembered_logins table
+     * for this user record
+     *
+     * @return boolean  True if the login was remembered successfully, false otherwise
+     */
+    public function rememberLogin()
+    {
+        $token = new Token();
+        $hashed_token = $token->getHash();
+        $this->remember_token = $token->getValue();
+
+        $this->expiry_timestamp = time() + 60 * 60 * 24 * 30;  // 30 days from now
+
+        $sql = 'INSERT INTO remembered_logins (token_hash, user_id, expires_at)
+                VALUES (:token_hash, :user_id, :expires_at)';
+
+        $db = static::getDB();
+        $stmt = $db->prepare($sql);
+
+        $stmt->bindValue(':token_hash', $hashed_token, PDO::PARAM_STR);
+        $stmt->bindValue(':user_id', $this->id, PDO::PARAM_INT);
+        $stmt->bindValue(':expires_at', date('Y-m-d H:i:s', $this->expiry_timestamp), PDO::PARAM_STR);
+
+        return $stmt->execute();
+    }
+
+    /**
+     * Send password reset instructions to the user specified
+     *
+     * @param string $email The email address
+     *
+     * @return void
+     */
+    public static function sendPasswordReset($email)
+    {
+        $user = static::findByEmail($email);
+
+        if ($user) {
+
+            if ($user->startPasswordReset()) {
+
+                $user->sendPasswordResetEmail();
+
+            }
+        }
+    }
+
+    /**
+     * Start the password reset process by generating a new token and expiry
+     *
+     * @return void
+     */
+    protected function startPasswordReset()
+    {
+        $token = new Token();
+        $hashed_token = $token->getHash();
+        $this->password_reset_token = $token->getValue();
+
+        $expiry_timestamp = time() + 60 * 60 * 2;  // 2 hours from now
+
+        $sql = 'UPDATE users
+                SET password_reset_hash = :token_hash,
+                    password_reset_expires_at = :expires_at
+                WHERE id = :id';
+
+        $db = static::getDB();
+        $stmt = $db->prepare($sql);
+
+        $stmt->bindValue(':token_hash', $hashed_token, PDO::PARAM_STR);
+        $stmt->bindValue(':expires_at', date('Y-m-d H:i:s', $expiry_timestamp), PDO::PARAM_STR);
+        $stmt->bindValue(':id', $this->id, PDO::PARAM_INT);
+
+        return $stmt->execute();
+    }
+
+    /**
+     * Send password reset instructions in an email to the user
+     *
+     * @return void
+     */
+    protected function sendPasswordResetEmail()
+    {
+        $url = 'http://' . $_SERVER['HTTP_HOST'] . '/password/reset/' . $this->password_reset_token;
+
+        $text = View::getTemplate('Password/reset_email.txt', ['url' => $url]);
+        $html = View::getTemplate('Password/reset_email.html', ['url' => $url]);
+
+        Mail::send($this->email, 'Password reset', $text, $html);
     }
 }

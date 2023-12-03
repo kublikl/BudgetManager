@@ -1,1 +1,3 @@
 /vendor
+App/Config.php
+composer.lock
