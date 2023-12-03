@@ -34,9 +34,16 @@ class Config
      */
     const DB_PASSWORD = 'secret';
 
+
     /**
      * Show or hide error messages on screen
      * @var boolean
      */
     const SHOW_ERRORS = true;
+
+    /**
+     * Secret key for hashing
+     * @var boolean
+     */
+    const SECRET_KEY = 'your-secret-key';
 }
