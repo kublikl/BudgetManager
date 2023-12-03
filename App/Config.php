@@ -3,7 +3,7 @@
 namespace App;
 
 /**
- * Application configuration
+ * Application configurationnnnnnnnnnnnnnnnnnnnnnnnnnnnnn
  *
  * PHP version 7.0
  */

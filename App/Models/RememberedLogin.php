@@ -15,6 +15,7 @@ class RememberedLogin extends \Core\Model
     private $user_id;
     private $expires_at;
     private $token_hash;
+
     /**
      * Find a remembered login model by the token
      *
