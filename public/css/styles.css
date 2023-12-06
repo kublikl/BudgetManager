@@ -11,3 +11,27 @@
 .alert-warning {
     background-color: #fcf8e3;
 }
+
+
+/* Bootstrap: */
+body {
+    background-color: #682929;
+}
+
+.navbar {
+    min-height: 200px;
+    background: center/cover url("https://images.unsplash.com/photo-1554224155-8d04cb21cd6c?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1170&q=80");
+    background-repeat: no-repeat;
+    font-size: 140%;
+    color: rgba(245, 245, 245, 0.988);
+}
+
+.navbar-brand {
+    font-size: 140%;
+}
+
+.pagedescription {
+    font-size: 1rem;
+    text-align: justify;
+    padding: 30px;
+}

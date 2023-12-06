@@ -4,12 +4,20 @@
 
 {% block body %}
 
-    <h1>Welcome</h1>
+<main>
+    <section class="pagedescription">
+        <div class="container">
+            <header>
+                <h1>Welcome</h1>
 
-    {% if current_user %}
-        Hello {{ current_user.name }}.
-    {% else %}
-        <a href="/signup/new">Sign up</a> or <a href="/login">log in</a>.
-    {% endif %}
+                    {% if current_user %}
+                        Hello {{ current_user.name }}.
+                    {% else %}
+                    <a href="/signup/new">Sign up</a> or <a href="/login">log in</a>.
+                    {% endif %}
+            </header>
+        </div>
+    </section>
+</main>
 
 {% endblock %}
