@@ -5,9 +5,8 @@ namespace App\Controllers;
 use \Core\View;
 use \App\Models\User;
 use \App\Auth;
-
 use \App\Flash;
-
+use \App\Models\Incomes;
 /**
  * AddIncome controller
  */
@@ -23,13 +22,23 @@ class AddIncome extends \Core\Controller
         View::renderTemplate('AddIncome/new.html', [
             'category' => User::getCategories()
             ]);
+            
       
 
     }
 
     public function createAction()
     {
-
+        $income = new Incomes($_POST);
+        if($income->save()){
+            Flash::addMessage('Income added successfully');
+            $this->redirect(Auth::getReturnToPage());
+        }else{
+            //wyswietli ten sam formularz dla new lecz z błędami jakie sie pojawiły
+            View::renderTemplate('AddIncome/new.html', [
+                'incomes' => $income
+              ]);
+        }
     }
 
     public function destroyAction()
