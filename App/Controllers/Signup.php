@@ -24,7 +24,7 @@ class Signup extends \Core\Controller
     }
 
     /**
-     * Sign up a new user
+     * Sign up a new user and assign date from default tables
      *
      * @return void
      */
@@ -34,8 +34,12 @@ class Signup extends \Core\Controller
 
         if ($user->save()) {
 
-            $user->sendActivationEmail();
+            $user_id = User::getNewUserId();
+            User::copyIncomesCategories($user_id);
+           // User::copyExpensesCategories($user_id);
+           // User::copyPaymentMethods($user_id);
 
+            $user->sendActivationEmail();
             $this->redirect('/signup/success');
 
         } else {
