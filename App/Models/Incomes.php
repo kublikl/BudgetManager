@@ -6,6 +6,7 @@ use PDO;
 use \Core\View;
 use \App\Auth;
 
+
 class Incomes extends \Core\Model
 {
   public $category;
@@ -14,15 +15,16 @@ class Incomes extends \Core\Model
   public $comment;
 
 
+
      // Error messages
 
-    public $errors = []; //tablica z błędami
+    public $errors = [];
 
     /**
      * Class constructor
      * @param array $data  Initial property values
      */
-    public function __construct($data = []) //konstruktor który tworzy, uruchamia się podczas tworzenia obiektu w kontrolerze i przpyisuje mu dane
+    public function __construct($data = [])
     {
         foreach ($data as $key => $value) {
             $this->$key = $value;
@@ -34,7 +36,9 @@ class Incomes extends \Core\Model
     public function save()
     {
         $this->validate();
-        $user_id = $_SESSION['user_id'];  
+        $user_id = $_SESSION['user_id']; 
+       // $user['id'] = Auth::getUser();
+       // $user_id = $user->id; 
         $category_id = $this->category;
 
         if(empty($this->errors)){

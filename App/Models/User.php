@@ -28,6 +28,7 @@ class User extends \Core\Model
     public $activation_token;
     public $activation_hash;
     public $is_active;
+    public $user_id;
    
 
     /**
@@ -476,26 +477,27 @@ class User extends \Core\Model
     
      public static function getCategories()
      {
-        
-        $user_id['id'] = Auth::getUser();
-        $sql = 'SELECT * FROM incomes_category_assigned_to_users WHERE user_id=:user_id';
-        $db = static::getDB();
-		$incomeCategories = $db->prepare($sql);
-        $incomeCategories->bindValue(':user_id', $_SESSION['user_id'], PDO::PARAM_INT);
-		$incomeCategories->execute();
+        $user = Auth::getUser();
 
-		return $incomeCategories->fetchAll(PDO::FETCH_ASSOC);
-        
-        
-        
-        /*
-        $stmt = $db->prepare($sql);
-
-        $stmt->bindValue(':user_id', $user_id, PDO::PARAM_INT);
-        $stmt->execute();
-        return $stmt->fetchAll();
-        */
+        if ($user) {
+            $user_id = $user->id;
+    
+            $sql = 'SELECT * FROM incomes_category_assigned_to_users WHERE user_id=:user_id';
+            $db = static::getDB();
+            $incomeCategories = $db->prepare($sql);
+            $incomeCategories->bindValue(':user_id', $user_id, PDO::PARAM_INT);
+            $incomeCategories->execute();
+    
+            return $incomeCategories->fetchAll(PDO::FETCH_ASSOC);
         }
+    
+        // WHEN THE USER IS NOT LOGGED IN, IT RETURN THE ARRAY
+        return [];
+
+  
+    }
+
+  
      
 
     /**
