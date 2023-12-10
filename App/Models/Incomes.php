@@ -13,6 +13,7 @@ class Incomes extends \Core\Model
   public $amount;
   public $date;
   public $comment;
+  public $user_id;
 
 
 
@@ -81,5 +82,25 @@ class Incomes extends \Core\Model
       if(strlen($this->comment)>100)
       $this->errors[] = 'Comment should be shorter than 100 chars';
       }
+
+      public static function getIncomeCategories()
+      {
+         $user = Auth::getUser();
+ 
+         if ($user) {
+             $user_id = $user->id;
+     
+             $sql = 'SELECT * FROM incomes_category_assigned_to_users WHERE user_id=:user_id';
+             $db = static::getDB();
+             $incomeCategories = $db->prepare($sql);
+             $incomeCategories->bindValue(':user_id', $user_id, PDO::PARAM_INT);
+             $incomeCategories->execute();
+     
+             return $incomeCategories->fetchAll(PDO::FETCH_ASSOC);
+         }
+     
+         // WHEN THE USER IS NOT LOGGED IN, IT RETURN THE ARRAY
+         return [];
+     }
     }
 

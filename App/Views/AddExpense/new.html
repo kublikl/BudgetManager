@@ -1,10 +1,10 @@
 {% extends 'base.html' %}
 
-{% block title %}Add Income{% endblock %}
+{% block title %}Add Expense{% endblock %}
 {% block footer %}
 <script>
     $(document).ready(function () {
-        $('#formAddIncome').validate({
+        $('#formAddExpense').validate({
             errorClass: 'error',
             rules: {
                 amount: {
@@ -23,7 +23,7 @@
             },
             messages: {
                 amount: {
-                    max: 'Amount max. 1.000.000 PLN',
+                    max: 'Amount max. 1.000.000PLN',
                     min: 'Amount min. 0.01PLN'
                 },
                 date: 'Date min. 2022-01-01',
@@ -33,44 +33,52 @@
     });
 </script>
 {% endblock %}
-
 {% block body %}
 
-<section class="addIncome" style="padding-top: 100px;">
+<section class="addExpense" style="padding-top: 100px;">
     <div class="container my-3">
         <header>
-            <h1>Add income</h1>
-            <p>In this section you can add income to a specific category, select a date and optionally leave a comment. Enjoy!</p>
-            {% if incomes.errors is not empty %}
+            <h1>Add expense</h1>
+            <p>In this section you can add your expenses in different currencies, pick a date, category, and if
+                you want, leave a comment about this expenditure</p>
+            {% if expenses.errors is not empty %}
             <p>Errors:</p>
             <ul>
-                {% for error in incomes.errors %}
+                {% for error in expenses.errors %}
                 <li>{{ error }}</li>
                 {% endfor %}
             </ul>
             {% endif %}
         </header>
-        <form action="/addIncome/create" method="post" id="formAddIncome">
+        <form action="/addExpense/create" method="post" id="formAddExpense">
             <div class="row">
                 <div class="col-sm-12 mb-4">
                     <label>Amount: PLN</label>
-                    <input type="number" id="amount" name="amount" min="0.01" max="100000" step="0.01" required>
-                    <!--<label>PLN</!--label>-->
-                 </div>
+                    <input type="number" id="amount" name="amount" min="0.01" max="100000" step="0.01" required="">
+                    <!-- <label>PLN</label> -->
+                </div>
 
                 <div class="col-sm-6 mb-4">
                     <label for="date">Enter a date:</label>
-                    <input type="date" id="date" name="date" min="2022-01-01" required>
+                    <input type="date" id="date" name="date" min="2022-01-01" required="">
+                </div>
+
+                <div class="col-sm-12">
+                    <label for="payment_method">Payment method:</label>
+                    <select name="payment_method" id="payment_method">
+                        {% for payment_method in payment_method %}
+                        <option value={{payment_method.id}}> {{payment_method.name}}</option>
+                        {% endfor %}
+                    </select>
                 </div>
 
                 <div class="col-sm-12 mb-4">
                     <label>Category:</label>
                     <select id="category" name="category">
-
-                        {% for income_category in income_category %}
-                        <option value={{income_category.id}}> {{income_category.name}}</option>
+                        <option value="">--Please choose an option--</option>
+                        {% for expense_category in expense_category %}
+                        <option value={{expense_category.id}}> {{expense_category.name}}</option>
                         {% endfor %}
-   
                     </select>
                 </div>
                 <div class="col-sm-12 mb-4">
@@ -79,7 +87,7 @@
                     <textarea id="comment" name="comment" rows="2" cols="50"></textarea>
                 </div>
                 <div class="col-sm-12 my-1">
-                    <input type="submit" class="button" value="Add income">
+                    <input type="submit" class="button" value="Add expense">
                     <input type="submit" class="button" value="Cancel">
                 </div>
             </div>

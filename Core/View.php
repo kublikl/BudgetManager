@@ -59,7 +59,9 @@ class View
             $twig = new \Twig\Environment($loader);
             $twig->addGlobal('current_user', \App\Auth::getUser());
             $twig->addGlobal('flash_messages', \App\Flash::getMessages());
-            $twig->addGlobal('category', \App\Models\User::getCategories());
+            $twig->addGlobal('income_category', \App\Models\Incomes::getIncomeCategories());
+            $twig->addGlobal('expense_category', \App\Models\Expenses::getExpenseCategories()); 
+            $twig->addGlobal('payment_method', \App\Models\Expenses::getPaymentMethods());
         }
 
         return $twig->render($template, $args);
