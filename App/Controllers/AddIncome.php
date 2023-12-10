@@ -32,9 +32,8 @@ class AddIncome extends \Core\Controller
         $income = new Incomes($_POST);
         if($income->save()){
             Flash::addMessage('Income added successfully');
-            $this->redirect(Auth::getReturnToPage());
+            View::renderTemplate('AddIncome/new.html');
         }else{
-            //wyswietli ten sam formularz dla new lecz z błędami jakie sie pojawiły
             View::renderTemplate('AddIncome/new.html', [
                 'incomes' => $income
               ]);

@@ -27,3 +27,8 @@ body {
     text-align: justify;
     padding: 30px;
 }
+
+.error {
+    color: red;
+}
+

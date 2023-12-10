@@ -1,6 +1,38 @@
 {% extends 'base.html' %}
 
 {% block title %}Add Income{% endblock %}
+{% block footer %}
+<script>
+    $(document).ready(function () {
+        $('#formAddIncome').validate({
+            errorClass: 'error',
+            rules: {
+                amount: {
+                    required: true,
+                    max: 1000000,
+                    min: "0.01"
+                },
+                date: {
+                    required: true,
+                    min: '2022-01-01'
+                },
+                category: 'required',
+                comment: {
+                    maxlength: 100
+                }
+            },
+            messages: {
+                amount: {
+                    max: 'Amount max. 1.000.000 PLN',
+                    min: 'Amount min. 0.01PLN'
+                },
+                date: 'Date min. 2022-01-01',
+                comment: 'Please type max. 100 characters'
+            }
+        });
+    });
+</script>
+{% endblock %}
 
 {% block body %}
 
@@ -18,12 +50,12 @@
             </ul>
             {% endif %}
         </header>
-        <form action="/addIncome/create" method="post">
+        <form action="/addIncome/create" method="post" id="formAddIncome">
             <div class="row">
                 <div class="col-sm-12 mb-4">
-                    <label>Amount:</label>
+                    <label>Amount: PLN</label>
                     <input type="number" id="amount" name="amount" min="0.01" max="100000" step="0.01" required>
-                    <label>PLN</label>
+                    <!--<label>PLN</!--label>-->
                  </div>
 
                 <div class="col-sm-6 mb-4">

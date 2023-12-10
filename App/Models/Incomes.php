@@ -61,7 +61,7 @@ class Incomes extends \Core\Model
          if ($this->amount == '') {
           $this->errors[] = 'Amount is required';
       }else if((int)($this->amount>=1000000))
-      $this->errors[] = 'Amount sohuld be less than 1000000PLN';
+      $this->errors[] = 'Amount sohuld be less than 1000000 PLN';
 
       //date
       if ($this->date == '') {
