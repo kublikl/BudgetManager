@@ -8,10 +8,10 @@
     <section class="pagedescription">
         <div class="container">
             <header>
-                <h1>Welcome</h1>
+                <h1>BudgetManager</h1>
 
                     {% if current_user %}
-                        Hello {{ current_user.name }}.
+                        Hello {{ current_user.name }}, ID: {{ current_user.id }}, {{ getCategorries.id }} !
                     {% else %}
                     <a href="/signup/new">Sign up</a> or <a href="/login">log in</a>.
                     {% endif %}

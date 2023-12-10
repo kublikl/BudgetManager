@@ -6,8 +6,6 @@ use \App\Models\User;
 
 /**
  * Account controller
- *
- * PHP version 7.0
  */
 class Account extends \Core\Controller
 {

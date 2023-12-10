@@ -4,8 +4,6 @@ namespace Core;
 
 /**
  * View
- *
- * PHP version 7.0
  */
 class View
 {
@@ -61,6 +59,7 @@ class View
             $twig = new \Twig\Environment($loader);
             $twig->addGlobal('current_user', \App\Auth::getUser());
             $twig->addGlobal('flash_messages', \App\Flash::getMessages());
+            $twig->addGlobal('category', \App\Models\User::getCategories());
         }
 
         return $twig->render($template, $args);

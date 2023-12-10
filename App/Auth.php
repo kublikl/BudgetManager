@@ -7,8 +7,6 @@ use App\Models\RememberedLogin;
 
 /**
  * Authentication
- *
- * PHP version 7.0
  */
 class Auth
 {
@@ -95,6 +93,7 @@ class Auth
     public static function getUser()
     {
         if (isset($_SESSION['user_id'])) {
+            
 
             return User::findByID($_SESSION['user_id']);
 
@@ -103,6 +102,7 @@ class Auth
             return static::loginFromRememberCookie();
         }
     }
+    
 
     /**
      * Login the user from a remembered login cookie

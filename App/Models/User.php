@@ -6,6 +6,7 @@ use PDO;
 use \App\Token;
 use \App\Mail;
 use \Core\View;
+use \App\Auth;
 
 /**
  * User model
@@ -27,6 +28,8 @@ class User extends \Core\Model
     public $activation_token;
     public $activation_hash;
     public $is_active;
+    public $user_id;
+   
 
     /**
      * Error messages
@@ -465,4 +468,105 @@ class User extends \Core\Model
 
         return false;
     }
+
+    /**
+     * Download categories assigned to the logged in user from the database
+     *
+     * @return void
+     */
+    
+     public static function getCategories()
+     {
+        $user = Auth::getUser();
+
+        if ($user) {
+            $user_id = $user->id;
+    
+            $sql = 'SELECT * FROM incomes_category_assigned_to_users WHERE user_id=:user_id';
+            $db = static::getDB();
+            $incomeCategories = $db->prepare($sql);
+            $incomeCategories->bindValue(':user_id', $user_id, PDO::PARAM_INT);
+            $incomeCategories->execute();
+    
+            return $incomeCategories->fetchAll(PDO::FETCH_ASSOC);
+        }
+    
+        // WHEN THE USER IS NOT LOGGED IN, IT RETURN THE ARRAY
+        return [];
+
+  
+    }
+
+  
+     
+
+    /**
+     * Download  all categories for user from the database
+     *
+     * @return void
+     */
+        /*
+    public static function getCategories()
+     {
+
+        $sql = 'SELECT * FROM incomes_category_default';
+                $db = static::getDB();
+                $stmt = $db->prepare($sql);
+                $stmt->execute();
+                return $stmt->fetchAll();
+     }
+     */
+
+     public static function getNewUserId()
+     {
+         $sql = 'SELECT id FROM users ORDER BY id DESC LIMIT 1';
+         $db = static::getDB();
+         $stmt = $db->prepare($sql);
+         $stmt->execute();
+       // return $stmt->fetchAll();
+        
+          $user = $stmt->fetch();
+          $user_id = $user['id'];
+          return $user_id;
+     }
+
+     public static function copyIncomesCategories($user_id)
+     {
+         //$user_id = self::getNewUserId();
+         $sql = 'INSERT INTO incomes_category_assigned_to_users (name) SELECT name FROM incomes_category_default';
+         $db = static::getDB();
+         $db->exec($sql);
+ 
+         $sql = 'UPDATE incomes_category_assigned_to_users SET `user_id`= :user_id  ORDER BY id DESC LIMIT 4';
+         $db = static::getDB();
+         $stmt = $db->prepare($sql);
+         $stmt->bindParam(':user_id', $user_id, PDO::PARAM_INT); 
+         $stmt->execute();
+     }
+
+     public static function copyExpensesCategories($user_id)
+     {
+         $sql = 'INSERT INTO expenses_category_assigned_to_users (name) SELECT name FROM expenses_category_default';
+         $db = static::getDB();
+         $db->exec($sql);
+ 
+         $sql = 'UPDATE expenses_category_assigned_to_users SET `user_id`= :user_id  ORDER BY id DESC LIMIT 16';
+         $db = static::getDB();
+         $stmt = $db->prepare($sql);
+         $stmt->bindParam(':user_id', $user_id, PDO::PARAM_INT); 
+         $stmt->execute();
+     }
+
+     public static function copyPaymentMethods($user_id)
+     {
+         $sql = 'INSERT INTO payment_methods_assigned_to_users (name) SELECT name FROM payment_methods_default';
+         $db = static::getDB();
+         $db->exec($sql);
+ 
+         $sql = 'UPDATE payment_methods_assigned_to_users SET `user_id`= :user_id  ORDER BY id DESC LIMIT 3';
+         $db = static::getDB();
+         $stmt = $db->prepare($sql);
+         $stmt->bindParam(':user_id', $user_id, PDO::PARAM_INT); 
+         $stmt->execute();
+     }
 }

@@ -8,8 +8,6 @@ use \App\Flash;
 
 /**
  * Profile controller
- *
- * PHP version 7.0
  */
 class Profile extends Authenticated
 {
