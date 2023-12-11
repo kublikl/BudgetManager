@@ -20,7 +20,7 @@ class AddIncome extends \Core\Controller
         $this->requireLogin(); //access to this page only with login status
 
         View::renderTemplate('AddIncome/new.html', [
-            'category' => User::getCategories()
+            'category' => Incomes::getIncomeCategories()
             ]);
             
       
