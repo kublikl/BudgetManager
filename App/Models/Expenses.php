@@ -82,33 +82,64 @@ class Expenses extends \Core\Model
     }
     public static function getExpenseCategories()
     {
+        /*
         $user_id['id'] = Auth::getUser();
-        //$id = $user[id];
         $sql = 'SELECT * FROM expenses_category_assigned_to_users WHERE user_id=:user_id';
         $db = static::getDB();
         $stmt = $db->prepare($sql);
 
-        //$stmt->bindValue(':user_id', $this->id, PDO::PARAM_INT);
         $stmt->bindValue(':user_id', $user_id, PDO::PARAM_INT);
         $stmt->execute();
-        //$categories = $stmt->fetchAll();
-        //return $categories;
         return $stmt->fetchAll();
+        */
+        
+            $user = Auth::getUser();
+    
+            if ($user) {
+                $user_id = $user->id;
+        
+                $sql = 'SELECT * FROM expenses_category_assigned_to_users WHERE user_id=:user_id';
+                $db = static::getDB();
+                $expenseCategories = $db->prepare($sql);
+                $expenseCategories->bindValue(':user_id', $user_id, PDO::PARAM_INT);
+                $expenseCategories->execute();
+        
+                return $expenseCategories->fetchAll(PDO::FETCH_ASSOC);
+            }
+        
+            // WHEN THE USER IS NOT LOGGED IN, IT RETURN THE ARRAY
+            return [];
+        
     }
 
     public static function getPaymentMethods()
     {
+        /*
         $user_id['id'] = Auth::getUser();
-        //$id = $user[id];
         $sql = 'SELECT * FROM payment_methods_assigned_to_users WHERE user_id=:user_id';
         $db = static::getDB();
         $stmt = $db->prepare($sql);
 
-        //$stmt->bindValue(':user_id', $this->id, PDO::PARAM_INT);
         $stmt->bindValue(':user_id', $user_id, PDO::PARAM_INT);
         $stmt->execute();
-        //$categories = $stmt->fetchAll();
-        //return $categories;
         return $stmt->fetchAll();
+        */
+        $user = Auth::getUser();
+    
+        if ($user) {
+            $user_id = $user->id;
+    
+            $sql = 'SELECT * FROM payment_methods_assigned_to_users WHERE user_id=:user_id';
+            $db = static::getDB();
+            $incomeCategories = $db->prepare($sql);
+            $incomeCategories->bindValue(':user_id', $user_id, PDO::PARAM_INT);
+            $incomeCategories->execute();
+    
+            return $incomeCategories->fetchAll(PDO::FETCH_ASSOC);
+        }
+    
+        // WHEN THE USER IS NOT LOGGED IN, IT RETURN THE ARRAY
+        return [];
+
     }
 }

@@ -28,7 +28,7 @@ class User extends \Core\Model
     public $activation_token;
     public $activation_hash;
     public $is_active;
-    public $user_id;
+    
    
 
     /**
@@ -475,31 +475,6 @@ class User extends \Core\Model
      * @return void
      */
     
-     public static function getCategories()
-     {
-        $user = Auth::getUser();
-
-        if ($user) {
-            $user_id = $user->id;
-    
-            $sql = 'SELECT * FROM incomes_category_assigned_to_users WHERE user_id=:user_id';
-            $db = static::getDB();
-            $incomeCategories = $db->prepare($sql);
-            $incomeCategories->bindValue(':user_id', $user_id, PDO::PARAM_INT);
-            $incomeCategories->execute();
-    
-            return $incomeCategories->fetchAll(PDO::FETCH_ASSOC);
-        }
-    
-        // WHEN THE USER IS NOT LOGGED IN, IT RETURN THE ARRAY
-        return [];
-
-  
-    }
-
-  
-     
-
     /**
      * Download  all categories for user from the database
      *
