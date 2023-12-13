@@ -1,0 +1,81 @@
+{% extends 'base.html' %}
+
+{% block title %}Balance review{% endblock %}
+{% block footer %}
+<script>
+    const el = document.getElementById('period');
+    const box = document.getElementById('hidden');
+
+    el.addEventListener('change', function handleChange(event) {
+        if (event.target.value === 'custom') {
+            box.style.visibility = 'visible';
+        } else {
+            box.style.visibility = 'hidden';
+        }
+    });
+</script>
+{% endblock %}
+{% block body %}
+
+<section class="balance">
+    <div class="container my-3">
+        <header>
+          <h1>Balance review</h1>
+          <p>Check balance from selected time period</p>
+        </header>
+        <div class="row">
+          <div class="col-sm-12 mb-4">
+              <form action="/balance/create" method="post" id="formBalance"><label for="period">Balance from which
+                      time period do you want to see?</label>
+                  <select name="period" id="period">
+                      <option value="prevM">Previous month</option>
+                      <option value="currentM" selected>Current month </option>
+                      <option value="year">This year</option>
+                      <option value="custom">Select period</option>
+                  </select>
+                  <br>
+                  <div id="hidden">
+                      <label for="start">Date from:</label>
+                      <input type="date" name="start" min="2010-01-01">
+                      <label for="end">Date to:</label>
+                      <input type="date" name="end" min="2010-01-01">
+                  </div>
+
+                  <br>
+                  <input type="submit" class="button" value="Show balance">
+                  <br><br>
+              </form>
+          </div>
+          
+          {% if user_incomes is not null or user_expenses is not null %}
+          <div class="col-sm-6 mb-4">
+              <h2 class="h4">Incomes</h2>
+              <table class="table table-bordered table-sm">
+                  <thead>
+                      <tr>
+                          <th>Category</th>
+                          <th>Sum</th>
+                      </tr>
+                  </thead>
+                  <tbody>
+                      {% for user_incomes in user_incomes %}
+                      <tr>
+                          <td>{{ user_incomes.name }}</td>
+                          <td>{{ user_incomes.sumOfIncome }}</td>
+                      </tr>
+
+                      {% endfor %}
+
+                  </tbody>
+              </table>
+
+              {% else %}
+
+              {% endif %}
+
+            </div>
+        </div>
+    </div>
+</section>
+
+{% endblock %}

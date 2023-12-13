@@ -11,7 +11,7 @@
                 <h1>BudgetManager</h1>
 
                     {% if current_user %}
-                        Hello {{ current_user.name }}, ID: {{ current_user.id }}, {{ getCategorries.id }} !
+                        Hello {{ current_user.name }}, ID: {{ current_user.id }} !
                     {% else %}
                     <a href="/signup/new">Sign up</a> or <a href="/login">log in</a>.
                     {% endif %}
