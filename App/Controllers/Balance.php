@@ -39,7 +39,7 @@ class Balance extends \Core\Controller
         $maxDate = $range['maxDate'];
 
         $user_incomes = Incomes::incomesBalance($user_id, $minDate, $maxDate);
-        var_dump($user_incomes);
+        //var_dump($user_incomes);
         $user_expenses = Expenses::expensesBalance($user_id, $minDate, $maxDate);
 
 
