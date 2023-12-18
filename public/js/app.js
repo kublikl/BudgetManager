@@ -4,7 +4,7 @@
  * Valid passwords contain at least one letter and one number.
  */
 $.validator.addMethod('validPassword',
-    function(value, element, param) {
+    function (value, element, param) {
 
         if (value != '') {
             if (value.match(/.*[a-z]+.*/i) == null) {

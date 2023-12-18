@@ -21,7 +21,8 @@ class AddExpense extends \Core\Controller
         $this->requireLogin(); //require login to acces to this page!
 
         View::renderTemplate('AddExpense/new.html');
-        //var_dump($user_categories);
+       
+
     }
 
     public function createAction()
@@ -35,10 +36,10 @@ class AddExpense extends \Core\Controller
                 'payment_method' => Expenses::getPaymentMethods()
 
                 ]);
-        }else{
+       /* }else{
             View::renderTemplate('AddExpense/new.html', [
                 'expenses' => $expense
-              ]);
+              ]); */
         }
 
 

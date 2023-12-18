@@ -120,5 +120,14 @@ class Incomes extends \Core\Model
 
         return $stmt->fetchAll();
      }
+
+     public static function getdataPointsIncomes($user_incomes){
+
+        $dataPointsIncomes = array();
+        foreach ($user_incomes as $income) {
+            $dataPointsIncomes[] = array("label" => $income['name'], "y" => $income['sumOfIncome']);
+        }
+        return $dataPointsIncomes;
+    }
     }
 

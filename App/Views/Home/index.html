@@ -5,19 +5,24 @@
 {% block body %}
 
 <main>
-    <section class="pagedescription">
-        <div class="container">
-            <header>
-                <h1>BudgetManager</h1>
+    <div class="container">
+        <section class="row vertical-center">
+                <div class="main-container py-2 px-4 col-md-8 offset-md-2 col-lg-6 offset-lg-3 my-5">
+                    <div class="row">
+                        <header class="welcome-message mt-2 mb-2 mx-2 py-3 px-5 w-100">
+                            <h1>BudgetManager</h1>
 
-                    {% if current_user %}
-                        Hello {{ current_user.name }}, ID: {{ current_user.id }} !
-                    {% else %}
-                    <a href="/signup/new">Sign up</a> or <a href="/login">log in</a>.
-                    {% endif %}
-            </header>
-        </div>
-    </section>
+                                {% if current_user %}
+                                Hello {{ current_user.name }}, your ID: {{ current_user.id }} ! 
+                                <p class="welcome-text text-justify">Select the option you are interested in from the navigation bar. Add new income, expenses, view the balance sheet for the period you are interested in, or personalize your account in the settings.</p>
+                                {% else %}
+                                <a href="/signup/new">Sign up</a> or <a href="/login">log in</a>.
+                                {% endif %}
+                        </header>
+                    </div>
+                </div>    
+        </section>
+    </div>    
 </main>
 
 {% endblock %}
