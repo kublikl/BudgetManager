@@ -4,6 +4,7 @@
 
 
 {% block footer %}
+<script src="/js/app.js"></script>
 <script>
     const select = document.getElementById('period');
     // const box = document.getElementById('hidden');
@@ -20,7 +21,7 @@
 
     //chart Incomes:
     window.onload = function () {
-        var chart = new CanvasJS.Chart("chartContainerIncomes", {
+        var chartIncomes = new CanvasJS.Chart("chartContainerIncomes", {
             animationEnabled: true,
             title: {
                 text: "Incomes pie chart"
@@ -32,16 +33,13 @@
                 type: "pie",
                 yValueFormatString: "#,##0.00\"PLN\"",
                 indexLabel: "{label} ({y})",
-                //dataPoints: <? php echo json_encode($_SESSION['dataPointsIncomes'], JSON_NUMERIC_CHECK); ?>
-                //dataPoints: "{{ array|json_encode(dataPointsIncomes and constant('JSON_PRETTY_PRINT')) }}"
-                //dataPoints: "{{ data|json_encode(dataPointsIncomes and constant('JSON_NUMERIC_CHECK')) }}"
                 dataPoints: {{ dataPointsIncomes|json_encode|raw }}
-        }]
+            }]
     });
-    chart.render();
+    chartIncomes.render();
 
     //chart Expenses:
-    var chart = new CanvasJS.Chart("chartContainerExpenses", {
+    var chartExpenses = new CanvasJS.Chart("chartContainerExpenses", {
         animationEnabled: true,
         title: {
             text: "Expenses pie chart"
@@ -56,7 +54,7 @@
             dataPoints: {{ dataPointsExpenses|json_encode|raw }}
         }]
     });
-    chart.render();
+    chartExpenses.render();
 }
 </script>
 {% endblock %}
@@ -87,7 +85,7 @@
                                 
                                 
                                 {% if error_date %}
-                                {{ error_date }}
+                                <span style="color: red">{{ error_date }}</span>
                                 {% endif %}
 
                             </div>
@@ -102,17 +100,23 @@
                                     <input type="date" name="end" min="2010-01-01" class="form-control form-control-sm">
                                 </div>
                             </div>
+
                             <div class="row justify-content-center">
-                                <div class="col-3 text-center">
-                                <input type="submit" class="btn btn-hover color-8 btn-lg btn-block mt-3" value="Show balance">
+                                <div class="col-sm-6 col-md-6 col-lg-3 text-center">
+                                    <h4>
+                                        <input type="submit" class="btn btn-hover color-8 btn-lg btn-block mt-3" value="Show balance">
+
+                                    </h4>
                                 </div>
-                            </div>                   
+                            </div>
+                  
                         </form>
                         <div class="row my-4">
                             <div class="col-12 text-center">
                                 <h4 class="mb-xl-4 balanceDates">
                                     {% if user_incomes is not null or user_expenses is not null %}
                                     <span>Start date: {{min_date}} </span><span>End date: {{max_date}}</span>
+                                    {% endif %}
                                 </h4>
                             </div>
                         </div>
@@ -142,7 +146,7 @@
                                         </tr>
                                     </tfoot>
                                 </table>									
-                            
+                                
                             </div>
                             
                             <div class="col-md-6 col-sm-12 mb-3 table-text">
@@ -177,16 +181,49 @@
                 
                         
                         
-                        
-                            <div id="chartContainerIncomes"  style="height: 370px; width: 100%;">
+                            {% if user_incomes is not empty and user_expenses is not empty %}
+
+                            <div id="chartContainerIncomes"  style="height: 300px; width: 100%;">
                                 <script src="https://canvasjs.com/assets/script/canvasjs.min.js"></script>
                             </div>
-                            
-                       
-                            <div id="chartContainerExpenses" style="height: 370px; width: 100%;"></div>
-                            <script src="https://canvasjs.com/assets/script/canvasjs.min.js"></script>
+                            <div id="chartContainerExpenses" style="height: 300px; width: 100%;">
+                                <script src="https://canvasjs.com/assets/script/canvasjs.min.js"></script>
+                            </div>
+                            {% elseif user_expenses is empty %}
+
+                            <h4 style="color: rgb(255, 255, 255)">You have no expenses in selected period!</h4>
+                            <div id="chartContainerIncomes"  style="height: 300px; width: 100%;">
+                                <script src="https://canvasjs.com/assets/script/canvasjs.min.js"></script>   
+                            </div>
+                            <div id="chartContainerExpenses" style="height: 300px; width: 100%;">
+                                <script src="https://canvasjs.com/assets/script/canvasjs.min.js"></script>
+
+                            {% elseif user_incomes is empty %}
+
+                            <h4 style="color: rgb(255, 255, 255)">You have no incomes in selected period!</h4>
+                            <div id="chartContainerIncomes"  style="height: 300px; width: 100%;">
+                                <script src="https://canvasjs.com/assets/script/canvasjs.min.js"></script>
+                            </div>
+                            <div id="chartContainerExpenses" style="height: 300px; width: 100%;">
+                                <script src="https://canvasjs.com/assets/script/canvasjs.min.js"></script>    
+                            </div>
                         
-                        {% endif %}
+                            {% else %}
+
+                            <h4><span style="color: rgb(255, 255, 255)">You have no incomes and expenses in selected period!</span></h4>
+
+                            {% endif %}
+                            <div class=""col-sm-12" style="justify-content: center; display: flex;">
+                                {% if sumExpenses < sumIncomes %} <h4><span style="color: rgb(255, 255, 255);"">Difference between incomes and expenses:  {{sumIncomes - sumExpenses}} PLN </span></h4>
+                                {% else %}
+                                <h4><span style=" color: red;"">Difference between incomes and expenses: {{(sumIncomes -
+                        sumExpenses)|number_format(2, '.', ',')}}
+                        PLN
+                    </span></h4>
+                                    {% endif %}
+                            </div>
+                        
+                        
                     </div>  
                 </div> 
             </div>    
