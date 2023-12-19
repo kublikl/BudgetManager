@@ -44,8 +44,8 @@ class Balance extends \Core\Controller
         $_SESSION['user_incomes'] = $user_incomes;
         $dataPointsIncomes = Incomes::getdataPointsIncomes($user_incomes);
         $dataPointsExpenses = Expenses::getdataPointsExpenses($user_expenses);
-        //$_SESSION['dataPointsIncomes'] = $dataPointsIncomes;
-        //var_dump($dataPointsIncomes);
+        $sumIncomes = Incomes::getSumOfIncomes($user_incomes);
+        $sumExpenses = Expenses::getSumOfExpenses($user_expenses);
 
 
     }
@@ -56,7 +56,9 @@ class Balance extends \Core\Controller
         'min_date' => $minDate,
         'max_date' => $maxDate,
         'dataPointsIncomes' => $dataPointsIncomes,
-        'dataPointsExpenses' => $dataPointsExpenses
+        'dataPointsExpenses' => $dataPointsExpenses,
+        'sumIncomes' => $sumIncomes,
+        'sumExpenses' => $sumExpenses
       ]);
 
   }

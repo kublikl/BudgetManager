@@ -63,95 +63,134 @@
 
 {% block body %}
 <section class="balance">
-    <div class="container my-3">
-        <header>
-            <h1>Balance review</h1>
-            <p>Check balance (incomes, expenses) from selected time period</p>
-        </header>
-        <div class="row g-2">
-            <div class="col-sm-12 mb-4">
-                <form action="/balance/create" method="post" id="formBalance">
-                    <div class="form-group">
-                        <label for="period">Balance from which time period do you want to see?</label>
-                        <select name="period" id="period" class="form-control">
-                            <option value="prevM">Previous month</option>
-                            <option value="currentM" selected>Current month </option>
-                            <option value="year">This year</option>
-                            <option value="custom">Select period</option>
-                        </select>
-                        <br>
-                        <div id="customDiv" hidden class="row">
-                            <div class="col">
-                                <label for="start">Date from:</label>
-                                <input type="date" name="start" min="2010-01-01" class="form-control form-control-sm">
+    <div class="container">
+        <div class="row mt-3">
+            <div class="main-container py-2 px-3 col my-5">
+                <div class="row">
+                    <div class="welcome-message mt-2 mb-2 mx-2 py-2 px-4 w-100">
+                        <div class="row">
+                            <div class="col-12 text-center">
+                                <h2 class="mb-xl-4">Balance review</h2>
                             </div>
-                            <div class="col">
-                                <label for="end">Date to:</label>
-                                <input type="date" name="end" min="2010-01-01" class="form-control form-control-sm">
-                            </div>
-
                         </div>
-                        {% if error_date %}
-                        {{ error_date }}
+                        <form action="/balance/create" method="post" id="search_form">
+                            <div class="input-group mb-4 col-sm-12 col-md-6 offset-md-3 pl-0 my-3">
+                                <div class="input-group-prepend">
+                                <label class="input-group-text"><i class="fas fa-calendar-alt" aria-hidden="true"></i></label>
+                                </div>				
+                                <select id="period" class="custom-select" data-live-search="true" name="period">
+                                    <option value="prevM">Previous month</option>
+                                    <option value="currentM" selected>Current month </option>
+                                    <option value="year">This year</option>
+                                    <option value="custom">Select period</option>
+                                </select>
+                                
+                                
+                                {% if error_date %}
+                                {{ error_date }}
+                                {% endif %}
+
+                            </div>
+                            <div id="customDiv" hidden class="row justify-content-center">
+                                
+                                <div class="col-3 text-center">
+                                    <label for="start">Date from:</label>
+                                    <input type="date" name="start" min="2010-01-01" class="form-control form-control-sm">
+                                </div>
+                                <div class="col-3 text-center">
+                                    <label for="end">Date to:</label>
+                                    <input type="date" name="end" min="2010-01-01" class="form-control form-control-sm">
+                                </div>
+                            </div>
+                            <div class="row justify-content-center">
+                                <div class="col-3 text-center">
+                                <input type="submit" class="btn btn-hover color-8 btn-lg btn-block mt-3" value="Show balance">
+                                </div>
+                            </div>                   
+                        </form>
+                        <div class="row my-4">
+                            <div class="col-12 text-center">
+                                <h4 class="mb-xl-4 balanceDates">
+                                    {% if user_incomes is not null or user_expenses is not null %}
+                                    <span>Start date: {{min_date}} </span><span>End date: {{max_date}}</span>
+                                </h4>
+                            </div>
+                        </div>
+                        <div class="row">
+				
+                            <div class="col-md-6 col-sm-12 mb-3 table-text">
+                                <h2>Incomes</h2>
+                                <table class="table table-hover table-active text-white table-sm">
+                                    <thead>
+                                        <tr>
+                                            <th>Category</th>
+                                            <th>Sum</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for user_incomes in user_incomes %}
+                                        <tr>
+                                            <td>{{ user_incomes.name }}</td>
+                                            <td>{{ user_incomes.sumOfIncome }}</td>
+                                        </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                    <tfoot>
+                                        <tr>
+                                            <td style="font-weight: bold;">Total</td>
+                                            <td style="font-weight: bold;">{{ sumIncomes }}</td>
+                                        </tr>
+                                    </tfoot>
+                                </table>									
+                            
+                            </div>
+                            
+                            <div class="col-md-6 col-sm-12 mb-3 table-text">
+                                <h2>Expenses</h2>
+                                <table class="table table-hover table-active text-white table-sm">
+                                    <thead>
+                                        <tr>
+                                            <th>Category</th>
+                                            <th>Sum</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for user_expenses in user_expenses %}
+                                        <tr>
+                                            <td>{{ user_expenses.name }}</td>
+                                            <td>{{ user_expenses.sumOfExpense }}</td>
+                                        </tr>
+                                        {% endfor %}      
+                                    </tbody>
+                                    <tfoot>
+                                        <tr>
+                                            <td style="font-weight: bold;">Total</td>
+                                            <td style="font-weight: bold;">{{ sumExpenses }}</td>
+                                        </tr>
+                                    </tfoot>
+                                </table>	
+                            
+                            </div>
+                        
+                        </div>      
+                                
+                
+                        
+                        
+                        
+                            <div id="chartContainerIncomes"  style="height: 370px; width: 100%;">
+                                <script src="https://canvasjs.com/assets/script/canvasjs.min.js"></script>
+                            </div>
+                            
+                       
+                            <div id="chartContainerExpenses" style="height: 370px; width: 100%;"></div>
+                            <script src="https://canvasjs.com/assets/script/canvasjs.min.js"></script>
+                        
                         {% endif %}
-                        <br>
-                        <input type="submit" class="button" value="Show balance">
-                        <br><br>
-                </form>
-            </div>
+                    </div>  
+                </div> 
+            </div>    
         </div>
-
-        {% if user_incomes is not null or user_expenses is not null %}
-        <span>Start date: {{min_date}} </span><span>End date: {{max_date}}</span>
-        <div class="col-sm-6 mb-4">
-            <h2 class="h4">Incomes</h2>
-            <table class="table table-bordered table-sm">
-                <thead>
-                    <tr>
-                        <th>Category</th>
-                        <th>Sum</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for user_incomes in user_incomes %}
-                    <tr>
-                        <td>{{ user_incomes.name }}</td>
-                        <td>{{ user_incomes.sumOfIncome }}</td>
-                    </tr>
-                    {% endfor %}
-
-                </tbody>
-            </table>
-            <div id="chartContainerIncomes" style="height: 370px; width: 100%;"></div>
-            <script src="https://canvasjs.com/assets/script/canvasjs.min.js"></script>
-        </div>
-        <div class="col-sm-6 mb-4">
-            <h2 class="h4">Expenses</h2>
-            <table class="table table-bordered table-sm">
-                <thead>
-                    <tr>
-                        <th>Category</th>
-                        <th>Sum</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for user_expenses in user_expenses %}
-                    <tr>
-                        <td>{{ user_expenses.name }}</td>
-                        <td>{{ user_expenses.sumOfExpense }}</td>
-                    </tr>
-                    {% endfor %}
-
-                </tbody>
-            </table>
-            <div id="chartContainerExpenses" style="height: 370px; width: 100%;"></div>
-            <script src="https://canvasjs.com/assets/script/canvasjs.min.js"></script>
-        </div>
-        {% endif %}
-
     </div>
-    </div>
-
 </section>
-
 {% endblock %}

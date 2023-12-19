@@ -69,8 +69,7 @@ class Expenses extends \Core\Model
         //date
         if ($this->date == '') {
             $this->errors[] = 'Date is required';
-        }/*else if((int)($this->date<wartosc))
-        $this->errors[] = 'Date should be after 01.01.2022';*/
+        }
 
         //category
         if ($this->category == '') {
@@ -169,5 +168,13 @@ class Expenses extends \Core\Model
             $dataPointsExpenses[] = array("label" => $expense['name'], "y" => $expense['sumOfExpense']);
         }
         return $dataPointsExpenses;
+    }
+    public static function getSumOfExpenses($user_expenses){
+        $sumExpenses = 0;
+        foreach ($user_expenses as $expense) {
+            $sumExpenses += $expense['sumOfExpense'];
+        }
+
+        return number_format($sumExpenses, 2, '.', '');
     }
 }

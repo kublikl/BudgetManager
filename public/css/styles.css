@@ -281,12 +281,4 @@ background-image: linear-gradient(to right, #eb3941, #f15e64, #e14e53, #e2373f);
 	animation: glow 2s ease-in-out infinite alternate;
 }
 
-@-webkit-keyframes glow {
-  from {
-    text-shadow: 0 0 5px #fff, 0 0 8px #fff, 0 0 12px #fff, 0 0 15px #fff, 0 0 18px #fff
-  }
-  to {
-    text-shadow: 0 0 15px #fff, 0 0 18px #fff, 0 0 21px #fff, 0 0 24px #fff, 0 0 27px #fff
-  }
-}
 
