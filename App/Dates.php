@@ -50,11 +50,6 @@ class Dates {
 
             $minDate = $_POST['start'];
             $maxDate = $_POST['end'];
-
-            if ($maxDate < $minDate) {
-
-                $_SESSION['error_date'] = "Enter proper time interval!";
-            }
         }
 
         $range = ['minDate' => $minDate, 'maxDate' => $maxDate];
@@ -83,6 +78,12 @@ class Dates {
             return true;
         } else {
             return false;
+        }
+    }
+    public static function checkRange($minDate, $maxDate)
+    {
+        if ($maxDate < $minDate) {
+            return "Start date must be earlier than end date!";
         }
     }
 }

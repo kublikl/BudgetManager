@@ -13,7 +13,7 @@
                             <h1>BudgetManager</h1>
 
                                 {% if current_user %}
-                                Hello {{ current_user.name }}, your ID: {{ current_user.id }} ! 
+                                Hello {{ current_user.name }} {#, your ID: {{ current_user.id }}#} ! 
                                 <p class="welcome-text text-justify">Select the option you are interested in from the navigation bar. Add new income, expenses, view the balance sheet for the period you are interested in, or personalize your account in the settings.</p>
                                 {% else %}
                                 <a href="/signup/new">Sign up</a> or <a href="/login">log in</a>.

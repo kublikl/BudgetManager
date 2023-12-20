@@ -5,6 +5,7 @@
 
 {% block footer %}
 <script src="/js/app.js"></script>
+<script src="/js/charts.js"></script>
 <script>
     const select = document.getElementById('period');
     // const box = document.getElementById('hidden');
@@ -93,11 +94,11 @@
                                 
                                 <div class="col-3 text-center">
                                     <label for="start">Date from:</label>
-                                    <input type="date" name="start" min="2010-01-01" class="form-control form-control-sm">
+                                    <input type="date" id="start" name="start" min="2010-01-01" class="form-control form-control-sm">
                                 </div>
                                 <div class="col-3 text-center">
                                     <label for="end">Date to:</label>
-                                    <input type="date" name="end" min="2010-01-01" class="form-control form-control-sm">
+                                    <input type="date" id="end" name="end" min="2010-01-01" class="form-control form-control-sm">
                                 </div>
                             </div>
 
@@ -114,9 +115,17 @@
                         <div class="row my-4">
                             <div class="col-12 text-center">
                                 <h4 class="mb-xl-4 balanceDates">
+ 
+                                    {% if not error_date %}
                                     {% if user_incomes is not null or user_expenses is not null %}
+                                    {% if min_date and max_date %}
                                     <span>Start date: {{min_date}} </span><span>End date: {{max_date}}</span>
+                                    {% else %}
+                                    <h6>Start date: not selected </h6>
+                                    <h6>End date: not selected </h6>
+                                    {% endif %}
                                     
+                                     
                                 </h4>
                             </div>
                         </div>
@@ -208,7 +217,7 @@
                             {% else %}
 
                             <h4><span style="color: rgb(255, 255, 255)">You have no incomes and expenses in selected period!</span></h4>
-                            
+
                             {% endif %}
                             <div class=""col-sm-12" style="justify-content: center; display: flex;">
                                 {% if sumExpenses < sumIncomes %} <h4><span style="color: rgb(255, 255, 255);"">Difference between incomes and expenses:  {{sumIncomes - sumExpenses}} PLN </span></h4>
@@ -216,6 +225,7 @@
                                 <h4><span style=" color: red;"">Difference between incomes and expenses: {{(sumIncomes -sumExpenses)|number_format(2, '.', ',')}} PLN </span></h4>
                                 
                             </div>
+                            {% endif %}
                             {% endif %}
                             {% endif %}
                         
