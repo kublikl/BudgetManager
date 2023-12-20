@@ -1,0 +1,233 @@
+{% extends 'base.html' %}
+
+{% block title %}Balance review{% endblock %}
+
+
+{% block footer %}
+<script src="/js/app.js"></script>
+<script>
+    const select = document.getElementById('period');
+    // const box = document.getElementById('hidden');
+
+    select.addEventListener('change', function handleChange(event) {
+        if (event.target.value === 'custom') {
+            document.getElementById("customDiv").hidden = false;
+            // box.style.visibility = 'visible';
+        } else {
+            document.getElementById("customDiv").hidden = true;
+            // box.style.visibility = 'hidden';
+        }
+    });
+
+    //chart Incomes:
+    window.onload = function () {
+        var chartIncomes = new CanvasJS.Chart("chartContainerIncomes", {
+            animationEnabled: true,
+            title: {
+                text: "Incomes pie chart"
+            },
+            subtitles: [{
+                text: ""
+            }],
+            data: [{
+                type: "pie",
+                yValueFormatString: "#,##0.00\"PLN\"",
+                indexLabel: "{label} ({y})",
+                dataPoints: {{ dataPointsIncomes|json_encode|raw }}
+            }]
+    });
+    chartIncomes.render();
+
+    //chart Expenses:
+    var chartExpenses = new CanvasJS.Chart("chartContainerExpenses", {
+        animationEnabled: true,
+        title: {
+            text: "Expenses pie chart"
+        },
+        subtitles: [{
+            text: ""
+        }],
+        data: [{
+            type: "pie",
+            yValueFormatString: "#,##0.00\"PLN\"",
+            indexLabel: "{label} ({y})",
+            dataPoints: {{ dataPointsExpenses|json_encode|raw }}
+        }]
+    });
+    chartExpenses.render();
+}
+</script>
+{% endblock %}
+
+{% block body %}
+<section class="balance">
+    <div class="container">
+        <div class="row mt-3">
+            <div class="main-container py-2 px-3 col my-5">
+                <div class="row">
+                    <div class="welcome-message mt-2 mb-2 mx-2 py-2 px-4 w-100">
+                        <div class="row">
+                            <div class="col-12 text-center">
+                                <h2 class="mb-xl-4">Balance review</h2>
+                            </div>
+                        </div>
+                        <form action="/balance/create" method="post" id="search_form">
+                            <div class="input-group mb-4 col-sm-12 col-md-6 offset-md-3 pl-0 my-3">
+                                <div class="input-group-prepend">
+                                <label class="input-group-text"><i class="fas fa-calendar-alt" aria-hidden="true"></i></label>
+                                </div>				
+                                <select id="period" class="custom-select" data-live-search="true" name="period">
+                                    <option value="prevM">Previous month</option>
+                                    <option value="currentM" selected>Current month </option>
+                                    <option value="year">This year</option>
+                                    <option value="custom">Select period</option>
+                                </select>
+                                
+                                
+                                {% if error_date %}
+                                <span style="color: red">{{ error_date }}</span>
+                                {% endif %}
+
+                            </div>
+                            <div id="customDiv" hidden class="row justify-content-center">
+                                
+                                <div class="col-3 text-center">
+                                    <label for="start">Date from:</label>
+                                    <input type="date" name="start" min="2010-01-01" class="form-control form-control-sm">
+                                </div>
+                                <div class="col-3 text-center">
+                                    <label for="end">Date to:</label>
+                                    <input type="date" name="end" min="2010-01-01" class="form-control form-control-sm">
+                                </div>
+                            </div>
+
+                            <div class="row justify-content-center">
+                                <div class="col-sm-6 col-md-6 col-lg-3 text-center">
+                                    <h4>
+                                        <input type="submit" class="btn btn-hover color-8 btn-lg btn-block mt-3" value="Show balance">
+
+                                    </h4>
+                                </div>
+                            </div>
+                  
+                        </form>
+                        <div class="row my-4">
+                            <div class="col-12 text-center">
+                                <h4 class="mb-xl-4 balanceDates">
+                                    {% if user_incomes is not null or user_expenses is not null %}
+                                    <span>Start date: {{min_date}} </span><span>End date: {{max_date}}</span>
+                                    {% endif %}
+                                </h4>
+                            </div>
+                        </div>
+                        <div class="row">
+				
+                            <div class="col-md-6 col-sm-12 mb-3 table-text">
+                                <h2>Incomes</h2>
+                                <table class="table table-hover table-active text-white table-sm">
+                                    <thead>
+                                        <tr>
+                                            <th>Category</th>
+                                            <th>Sum</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for incomes in user_incomes %}
+                                        <tr>
+                                            <td>{{ user_incomes.name }}</td>
+                                            <td>{{ user_incomes.sumOfIncome }}</td>
+                                        </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                    <tfoot>
+                                        <tr>
+                                            <td style="font-weight: bold;">Total</td>
+                                            <td style="font-weight: bold;">{{ sumIncomes }}</td>
+                                        </tr>
+                                    </tfoot>
+                                </table>									
+                                
+                            </div>
+                            
+                            <div class="col-md-6 col-sm-12 mb-3 table-text">
+                                <h2>Expenses</h2>
+                                <table class="table table-hover table-active text-white table-sm">
+                                    <thead>
+                                        <tr>
+                                            <th>Category</th>
+                                            <th>Sum</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for user_expenses in user_expenses %}
+                                        <tr>
+                                            <td>{{ user_expenses.name }}</td>
+                                            <td>{{ user_expenses.sumOfExpense }}</td>
+                                        </tr>
+                                        {% endfor %}      
+                                    </tbody>
+                                    <tfoot>
+                                        <tr>
+                                            <td style="font-weight: bold;">Total</td>
+                                            <td style="font-weight: bold;">{{ sumExpenses }}</td>
+                                        </tr>
+                                    </tfoot>
+                                </table>	
+                            
+                            </div>
+                        
+                        </div>      
+                                
+                
+                        
+                        
+                            {% if user_incomes is not empty and user_expenses is not empty %}
+
+                            <div id="chartContainerIncomes"  style="height: 300px; width: 100%;">
+                                <script src="https://canvasjs.com/assets/script/canvasjs.min.js"></script>
+                            </div>
+                            <div id="chartContainerExpenses" style="height: 300px; width: 100%;">
+                                <script src="https://canvasjs.com/assets/script/canvasjs.min.js"></script>
+                            </div>
+                            {% elseif user_expenses is empty %}
+
+                            <h4 style="color: rgb(255, 255, 255)">You have no expenses in selected period!</h4>
+                            <div id="chartContainerIncomes"  style="height: 300px; width: 100%;">
+                                <script src="https://canvasjs.com/assets/script/canvasjs.min.js"></script>   
+                            </div>
+                            <div id="chartContainerExpenses" style="height: 300px; width: 100%;">
+                                <script src="https://canvasjs.com/assets/script/canvasjs.min.js"></script>
+
+                            {% elseif user_incomes is empty %}
+
+                            <h4 style="color: rgb(255, 255, 255)">You have no incomes in selected period!</h4>
+                            <div id="chartContainerIncomes"  style="height: 300px; width: 100%;">
+                                <script src="https://canvasjs.com/assets/script/canvasjs.min.js"></script>
+                            </div>
+                            <div id="chartContainerExpenses" style="height: 300px; width: 100%;">
+                                <script src="https://canvasjs.com/assets/script/canvasjs.min.js"></script>    
+                            </div>
+                        
+                            {% else %}
+
+                            <h4><span style="color: rgb(255, 255, 255)">You have no incomes and expenses in selected period!</span></h4>
+
+                            {% endif %}
+                            <div class=""col-sm-12" style="justify-content: center; display: flex;">
+                                {% if sumExpenses < sumIncomes %} <h4><span style="color: rgb(255, 255, 255);"">Difference between incomes and expenses:  {{sumIncomes - sumExpenses}} PLN </span></h4>
+                                {% else %}
+                                <h4><span style=" color: red;"">Difference between incomes and expenses: {{(sumIncomes -
+                        sumExpenses)|number_format(2, '.', ',')}}
+                        PLN
+                    </span></h4>
+                                    {% endif %}
+                            </div>
+                        
+                        
+                    </div>  
+                </div> 
+            </div>    
+        </div>
+    </div>
+</section>
+{% endblock %}

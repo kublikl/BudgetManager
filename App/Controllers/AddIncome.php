@@ -19,11 +19,11 @@ class AddIncome extends \Core\Controller
     {
         $this->requireLogin(); //access to this page only with login status
 
-        View::renderTemplate('AddIncome/new.html', [
+        View::renderTemplate('AddIncome/new.html');
+       /* , [
             'category' => Incomes::getIncomeCategories()
-            ]);
-            
-      
+            ]); 
+ */
 
     }
 
@@ -32,24 +32,16 @@ class AddIncome extends \Core\Controller
         $income = new Incomes($_POST);
         if($income->save()){
             Flash::addMessage('Income added successfully');
-            View::renderTemplate('AddIncome/new.html');
-        }else{
+            View::renderTemplate('AddIncome/new.html' , [
+                'income_category' => Incomes::getIncomeCategories()
+            ]);
+        
+        
+        
+            /*}else{
             View::renderTemplate('AddIncome/new.html', [
                 'incomes' => $income
-              ]);
+              ]);*/
         }
     }
-
-    public function destroyAction()
-    {
-
-    }
-    /**
-     * Show a "add income" flash message??? 
-     */
-    public function showAddIncomeMessageAction()
-    {
-
-    }
-
 }

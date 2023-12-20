@@ -69,8 +69,7 @@ class Expenses extends \Core\Model
         //date
         if ($this->date == '') {
             $this->errors[] = 'Date is required';
-        }/*else if((int)($this->date<wartosc))
-        $this->errors[] = 'Date should be after 01.01.2022';*/
+        }
 
         //category
         if ($this->category == '') {
@@ -145,5 +144,37 @@ class Expenses extends \Core\Model
         // WHEN THE USER IS NOT LOGGED IN, IT RETURN THE ARRAY
         return [];
 
+    }
+    public static function expensesBalance($user_id, $minDate, $maxDate) {
+        $sql = 'SELECT `name`, SUM(`amount`) AS sumOfExpense FROM `expenses`, `expenses_category_assigned_to_users`
+        WHERE `expenses`.`expense_category_assigned_to_user_id`=`expenses_category_assigned_to_users`.`id` AND `expenses`.`user_id` = :user_id
+        AND `expenses`.`date_of_expense`
+        BETWEEN :minDate AND :maxDate GROUP BY `expense_category_assigned_to_user_id` ORDER BY sumOfExpense DESC';
+
+        $db = static::getDB();
+        $stmt = $db->prepare($sql);
+
+        $stmt->bindValue(':user_id', $user_id, PDO::PARAM_INT);
+        $stmt->bindValue(':minDate', $minDate, PDO::PARAM_STR);
+        $stmt->bindValue(':maxDate', $maxDate, PDO::PARAM_STR);
+        $stmt->execute();
+
+        return $stmt->fetchAll();
+    }
+    public static function getdataPointsExpenses($user_expenses){
+
+        $dataPointsExpenses = array();
+        foreach ($user_expenses as $expense) {
+            $dataPointsExpenses[] = array("label" => $expense['name'], "y" => $expense['sumOfExpense']);
+        }
+        return $dataPointsExpenses;
+    }
+    public static function getSumOfExpenses($user_expenses){
+        $sumExpenses = 0;
+        foreach ($user_expenses as $expense) {
+            $sumExpenses += $expense['sumOfExpense'];
+        }
+
+        return number_format($sumExpenses, 2, '.', '');
     }
 }

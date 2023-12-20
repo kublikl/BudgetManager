@@ -36,63 +36,77 @@
 {% endblock %}
 {% block body %}
 
-<section class="addExpense" style="padding-top: 100px;">
-    <div class="container my-3">
-        <header>
-            <h1>Add expense</h1>
-            <p>In this section you can add your expenses, pick a date, category, and if
-                you want, leave a comment</p>
-            {% if expenses.errors is not empty %}
-            <p>Errors:</p>
-            <ul>
-                {% for error in expenses.errors %}
-                <li>{{ error }}</li>
-                {% endfor %}
-            </ul>
-            {% endif %}
-        </header>
-        <form action="/addExpense/create" method="post" id="formAddExpense">
-            <div class="row">
-                <div class="col-sm-12 mb-4">
-                    <label>Amount: PLN</label>
-                    <input type="number" id="amount" name="amount" min="0.01" max="100000" step="0.01" required="">
-                    <!-- <label>PLN</label> -->
-                </div>
-
-                <div class="col-sm-6 mb-4">
-                    <label for="date">Enter a date:</label>
-                    <input type="date" id="date" name="date" min="2022-01-01" required="">
-                </div>
-
-                <div class="col-sm-12">
-                    <label for="payment_method">Payment method:</label>
-                    <select name="payment_method" id="payment_method">
-                        {% for payment_method in payment_method %}
-                        <option value={{payment_method.id}}> {{payment_method.name}}</option>
+<section class="row vertical-center">
+    <div class="main-container py-2 px-4 col-md-8 offset-md-2 col-lg-6 offset-lg-3 my-5">
+        <div class="row">
+            <div class="welcome-message  mt-2 mb-2 mx-2 py-3 px-5 w-100">
+                <header class="col-12 text-center">
+                    <h1>Add expense</h1>
+                    {% if expenses.errors is not empty %}
+                    <p>Errors:</p>
+                    <ul>
+                        {% for error in expenses.errors %}
+                        <li>{{ error }}</li>
                         {% endfor %}
-                    </select>
-                </div>
+                    </ul>
+                    {% endif %}
+                </header>
 
-                <div class="col-sm-12 mb-4">
-                    <label>Category:</label>
-                    <select id="category" name="category">
-                        <option value="">--Please choose an option--</option>
-                        {% for expense_category in expense_category %}
-                        <option value={{expense_category.id}}> {{expense_category.name}}</option>
-                        {% endfor %}
-                    </select>
-                </div>
-                <div class="col-sm-12 mb-4">
-                    <label for="comment">Comment:</label>
-                    <br>
-                    <textarea id="comment" name="comment" rows="2" cols="50"></textarea>
-                </div>
-                <div class="col-sm-12 my-1">
-                    <input type="submit" class="button" value="Add expense">
-                    <input class="button" type="button" onclick="window.location.replace('/')" value="Cancel">
-                </div>
-            </div>
-        </form>
+                <form action="/addExpense/create" method="post">
+                    <div class="input-group mt-3">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text"> <i class="fas fa-wallet" aria-hidden="true"></i> </span>
+                        </div>
+                        <input type="number" class="form-control" placeholder="Amount" min="0" max="1000000" step="0.01" aria-label="Amount" name="amount" value="" required="" autofocus="">
+                    </div>
+
+
+                    <div class="input-group mt-3">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text"> <i class="fas fa-calendar-alt" aria-hidden="true"></i> </span>
+                        </div>
+                        <input id="transactionDate" type="date" class="form-control" aria-label="data" name="date" value="2023-12-17" min="2000-01-01" max="2024-01-31" required="">
+                    </div>
+
+                    <div class="input-group mt-3">
+                        <div class="input-group-prepend">
+                            <label class="input-group-text"><i class="fas fa-money-check" aria-hidden="true"></i></label>
+                        </div>
+                            <select name="payment_method" id="payment_method" class="form-control">
+                                {% for method in payment_method %}
+                                <option value={{method.id}}> {{method.name}}</option>
+                                {% endfor %}
+                            </select>
+                    </div>
+
+                    <div class="input-group mt-3">
+                        <div class="input-group-prepend">
+                            <label class="input-group-text"><i class="fas fa-shopping-cart" aria-hidden="true"></i></label>
+                        </div>
+                            <select id="category" name="category" class="form-control">
+                                <option value="">--Please choose an option--</option>
+                                {% for category in expense_category %}
+                                <option value={{category.id}}> {{category.name}}</option>
+                                {% endfor %}
+                            </select>
+                    </div>
+                    <div class="input-group mt-3">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text">
+                                <i class="fas fa-pen" aria-hidden="true"></i>
+                            </span>
+                        </div>
+                        <textarea class="form-control" rows="2 mt-3" maxlength="90" placeholder="Comment (optionally)" name="comment"></textarea>    
+                    </div>
+                    <div class="row">
+                        <div class="col-6">
+                        <input type="submit" class="btn btn-hover color-8 btn-lg btn-block mt-3" value="Add expense">
+                        </div>
+                        <div class="col-6">
+                        <input type="button" class="btn btn-hover color-11 btn-block btn-lg mt-3" onclick="window.location.replace('/')" value="Cancel">
+                        </div>
+                    </div>
+                </form>
     </div>
 </section>
 

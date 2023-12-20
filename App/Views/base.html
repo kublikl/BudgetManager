@@ -1,84 +1,95 @@
-<!DOCTYPE html>
-<html>
+<!DOCTYPE HTML>
+<html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>{% block title %}{% endblock %}</title>
-    <link rel="stylesheet" href="/css/styles.css" />
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM" crossorigin="anonymous">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Dosis&family=Lobster&family=Slackside+One&display=swap" rel="stylesheet">
+	<meta charset="utf-8"/>
+	<meta name="viewport" content="width=device-width" initial-scale=1>
+	<meta http-equiv="X-Ua-Compatible" content="IE=edge">
+	
+	<title>{% block title %}{% endblock %}</title>
+	<meta name="keywords" content="save, money, dreams, goals, home, budget, dreamchaser">
+	<link rel="shortcut icon" type="image/x-icon" href="../img/favicon.ico" />
+	<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+		
+	<link href="https://fonts.googleapis.com/css?family=Open+Sans:400,700&display=swap" rel="stylesheet">
+	<link href="https://fonts.googleapis.com/css?family=Monoton&display=swap" rel="stylesheet">
+	<link rel="stylesheet" href="/css/styles.css">
+	
 
 </head>
 
+
 <body>
-    <header>
 
+	{% if current_user %}
+		<header>
+			<nav class="navbar navbar-dark welcome-message navbar-expand-lg">
+				
+				<a class="navbar-brand" href="/home/index"><img src="https://cdn-icons-png.flaticon.com/512/72/72686.png" width="30" height="30" class="d-inline-block mr-1 align-bottom" alt="Logo"><span>Budget Manager</span></a>
+				
+				<div class="menu-btn navbar-toggler" data-toggle="collapse" data-target="#mainmenu" aria-controls="mainmenu" aria-label="Navigator">
+					<div class="menu-btn__burger"></div>
+				</div>
+		
+				
+				<div class="collapse navbar-collapse" id="mainmenu">
+					
+					<ul class="navbar-nav ml-auto"> 
+						
+						<li class="nav-item mr-4">
+							<a class="nav-link" href="/home/index" > Home page </a>					
+						</li>
+					
+						<li class="nav-item mr-4">
+							<a class="nav-link" href="/addIncome/new">Add income</a>					
+						</li>
+
+						<li class="nav-item mr-4">
+							<a class="nav-link" href="/addExpense/new">Add expense</a>
+						</li>
+
+						<li class="nav-item mr-4">
+							<a class="nav-link" href="/Balance/new">Balance review</a>
+						</li>	
+
+						<li class="nav-item mr-4">
+							<a class="nav-link disabled" href="#">Settings</a>
+						</li>
+
+						<li class="nav-item mr-4">
+							<a class="nav-link" href="/logout">Log out</a>
+						</li>					
+					
+					</ul>
+					
+				</div>
+			
+			</nav>
+		
+		</header>
+	{% endif %}
+		{% for message in flash_messages %}
+			<div class="alert alert-{{ message.type }} alert-dismissible fade show mb-3" role="alert" data-auto-dismiss="3000">
+				{{ message.body }}
+				<button type="button" class="close" data-dismiss="alert" aria-label="Close">
+					<span aria-hidden="true">&times;</span>
+				</button>
+			</div>
+		{% endfor %}
 	<div class="container">
-        {% if current_user %}
-        <nav class="navbar navbar-dark bg-dark navbar-expand-md">
-            <a class="navbar-brand" href="/home/index">Budget Manager</a>
+	
 
-            <button class="navbar-toggler order-first" type="button" data-toggle="collapse" data-target="#mainmenu"
-                aria-controls="mainmenu" aria-expanded="false" aria-label="Navigation switch">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse" id="mainmenu">
-                <ul class="navbar-nav mr-auto">
-                    <li class="nav-item">
-                        <a class="nav-link" href="/addIncome/new">Add income</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="/addExpense/new">Add expense</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="balance.php">Balance review</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link disabled" href="#">Settings</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="/logout">Log out</a>
-                    </li>
-                </ul>
-            </div>
-        </nav>
-        {% else %}
-        <nav class="navbar navbar-dark bg-dark navbar-expand-md">
-            <a class="navbar-brand" href="/home/index">Budget Manager</a>
-            <button class="navbar-toggler order-first" type="button" data-toggle="collapse" data-target="#menu"
-                aria-controls="mainmenu" aria-expanded="false" aria-label="Navigation switch">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse" id="menu">
-                <ul class="navbar-nav mr-auto">
-                    <li class="nav-item">
-                        <a class="nav-link" href="/signup/new">Sign Up!</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="/login/new">Log in</a>
-                    </li>
-                </ul>
-            </div>
-        </nav>
-        {% endif %}
-    </header>
+		{% block body %}
+		{% endblock %}
+	</div>
 
-        {% for message in flash_messages %}
-            <div class="alert alert-{{ message.type }}">
-                {{ message.body }}
-            </div>
-        {% endfor %}
+    <script src="https://code.jquery.com/jquery-3.1.1.min.js" integrity="sha256-hVVnYaiADRTO2PzUGmuLJr8BLUSjGIZsDYGmIJLv2b8=" crossorigin="anonymous"></script>
+    <script src="https://ajax.aspnetcdn.com/ajax/jquery.validate/1.15.0/jquery.validate.min.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
+	<script src="https://kit.fontawesome.com/c41b73fbf8.js" crossorigin="anonymous"></script>
+	<script src="../js/bootstrap-auto-dismiss-alert.js"></script>
+	<script src="../js/toggleButton.js"></script>
 
-        {% block body %}
-        {% endblock %}
-
-    </div>
-
-    <script src="https://code.jquery.com/jquery-3.6.1.min.js"
-        integrity="sha256-o88AwQnZB+VDvE9tvIXrMQaPlFFSUTR+nldQm1LuPXQ=" crossorigin="anonymous"></script>
-    <script src="https://ajax.aspnetcdn.com/ajax/jquery.validate/1.17.0/jquery.validate.min.js"></script>
 
     {% block footer %}
     {% endblock %}
