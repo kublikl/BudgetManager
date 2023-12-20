@@ -116,7 +116,7 @@
                                 <h4 class="mb-xl-4 balanceDates">
                                     {% if user_incomes is not null or user_expenses is not null %}
                                     <span>Start date: {{min_date}} </span><span>End date: {{max_date}}</span>
-                                    {% endif %}
+                                    
                                 </h4>
                             </div>
                         </div>
@@ -132,7 +132,7 @@
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        {% for incomes in user_incomes %}
+                                        {% for user_incomes in user_incomes %}
                                         <tr>
                                             <td>{{ user_incomes.name }}</td>
                                             <td>{{ user_incomes.sumOfIncome }}</td>
@@ -177,10 +177,7 @@
                             </div>
                         
                         </div>      
-                                
-                
-                        
-                        
+                            
                             {% if user_incomes is not empty and user_expenses is not empty %}
 
                             <div id="chartContainerIncomes"  style="height: 300px; width: 100%;">
@@ -211,18 +208,16 @@
                             {% else %}
 
                             <h4><span style="color: rgb(255, 255, 255)">You have no incomes and expenses in selected period!</span></h4>
-
+                            
                             {% endif %}
                             <div class=""col-sm-12" style="justify-content: center; display: flex;">
                                 {% if sumExpenses < sumIncomes %} <h4><span style="color: rgb(255, 255, 255);"">Difference between incomes and expenses:  {{sumIncomes - sumExpenses}} PLN </span></h4>
                                 {% else %}
-                                <h4><span style=" color: red;"">Difference between incomes and expenses: {{(sumIncomes -
-                        sumExpenses)|number_format(2, '.', ',')}}
-                        PLN
-                    </span></h4>
-                                    {% endif %}
+                                <h4><span style=" color: red;"">Difference between incomes and expenses: {{(sumIncomes -sumExpenses)|number_format(2, '.', ',')}} PLN </span></h4>
+                                
                             </div>
-                        
+                            {% endif %}
+                            {% endif %}
                         
                     </div>  
                 </div> 
