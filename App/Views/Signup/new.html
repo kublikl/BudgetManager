@@ -5,6 +5,7 @@
 {% block footer %}
     <script src="/js/hideShowPassword.min.js"></script>
     <script src="/js/app.js"></script>
+    
 
     <script>
         $(document).ready(function() {
@@ -59,23 +60,54 @@
         </ul>
     {% endif %}
 
-    <form method="post" action="/signup/create" id="formSignup">
+<main>
+    
+        <div class="row vertical-center">
+            <div class="main-container py-2 px-4 col-md-8 offset-md-2 col-lg-6 offset-lg-3 my-5">
+                
+                    
+            <h1 class="mb-xl-4 text-center brand"><img class="img-fluid" src="https://cdn-icons-png.flaticon.com/512/72/72686.png" width="40" height="40" alt="Logo" style="padding-bottom: 15px;">Budget Manager</h1>
 
-        <div class="form-group">
-            <label for="inputName">Name</label>
-            <input id="inputName" name="name" placeholder="Name" autofocus value="{{ user.name }}" required class="form-control" />
-        </div>
-        <div class="form-group">
-            <label for="inputEmail">Email address</label>
-            <input id="inputEmail" name="email" placeholder="email address" value="{{ user.email }}" required type="email" class="form-control" />
-        </div>
-        <div class="form-group">
-            <label for="inputPassword">Password</label>
-            <input type="password" id="inputPassword" name="password" placeholder="Password" required class="form-control" />
-        </div>
+                <div class="row">	
+				
+                    <form class="welcome-message mt-2 mb-2 mx-2 py-3 px-5 w-100" method="post" action="/signup/create" id="formSignup">
 
-        <button type="submit" class="btn btn-default">Sign up</button>
+                        <div class="input-group">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text"> <i class="fas fa-user-alt"></i> </span>
+                            </div>
+                            <input id="inputName" name="name" placeholder="Name" autofocus value="{{ user.name }}" required class="form-control" />    
 
-    </form>
+
+                        </div>
+                        <div class="input-group mt-3">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text"> <i class="fas fa-envelope"></i> </span>
+                            </div>
+                            <input id="inputEmail" name="email" placeholder="email address" value="{{ user.email }}" required type="email" class="form-control" />
+                        </div>
+
+                        <div class="input-group mt-3">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text"> <i class="fa fa-lock"></i></span>
+                                <input type="password" id="inputPassword" name="password" placeholder="Password" required class="form-control" />
+                            </div>
+
+                            
+                        </div>
+                        
+
+                        <button type="submit" class="btn btn-hover color-8 btn-lg btn-block mt-3 mb-2">Sign up</button>
+                        Already have an account? <a href="/home/index">Log in</a>
+
+                    </form>
+                     
+                </div>     
+                    
+                   
+            </div>
+        </div>       
+    
+</main>
 
 {% endblock %}

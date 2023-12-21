@@ -511,6 +511,7 @@ class User extends \Core\Model
          $sql = 'INSERT INTO incomes_category_assigned_to_users (name) SELECT name FROM incomes_category_default';
          $db = static::getDB();
          $db->exec($sql);
+         //$stmt = $db->prepare($sql);
  
          $sql = 'UPDATE incomes_category_assigned_to_users SET `user_id`= :user_id  ORDER BY id DESC LIMIT 4';
          $db = static::getDB();
