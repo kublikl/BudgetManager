@@ -61,16 +61,13 @@
     {% endif %}
 
 <main>
-    
+    <div class="container">
         <div class="row vertical-center">
             <div class="main-container py-2 px-4 col-md-8 offset-md-2 col-lg-6 offset-lg-3 my-5">
-                
-                    
-            <h1 class="mb-xl-4 text-center brand"><img class="img-fluid" src="https://cdn-icons-png.flaticon.com/512/72/72686.png" width="40" height="40" alt="Logo" style="padding-bottom: 15px;">Budget Manager</h1>
-
                 <div class="row">	
-				
                     <form class="welcome-message mt-2 mb-2 mx-2 py-3 px-5 w-100" method="post" action="/signup/create" id="formSignup">
+
+                        <h1 class="mb-xl-4 text-center brand"><img class="img-fluid" src="https://cdn-icons-png.flaticon.com/512/72/72686.png" width="40" height="40" alt="Logo" style="padding-bottom: 15px;">Budget Manager</h1>
 
                         <div class="input-group">
                             <div class="input-group-prepend">
@@ -96,18 +93,14 @@
                             
                         </div>
                         
-
                         <button type="submit" class="btn btn-hover color-8 btn-lg btn-block mt-3 mb-2">Sign up</button>
                         Already have an account? <a href="/home/index">Log in</a>
 
-                    </form>
-                     
-                </div>     
-                    
-                   
+                    </form> 
+                </div>      
             </div>
         </div>       
-    
+    </div>
 </main>
 
 {% endblock %}
