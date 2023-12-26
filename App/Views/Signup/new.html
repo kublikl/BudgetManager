@@ -5,45 +5,82 @@
 {% block footer %}
     <script src="/js/hideShowPassword.min.js"></script>
     <script src="/js/app.js"></script>
+    <script src="/js/showHidePassword.js"></script>
     
 
     <script>
-        $(document).ready(function() {
-
-            /**
-             * Validate the form
-             */
-            $('#formSignup').validate({
-                rules: {
-                    name: 'required',
-                    email: {
-                        required: true,
-                        email: true,
-                        remote: '/account/validate-email'
-                    },
-                    password: {
-                        required: true,
-                        minlength: 6,
-                        validPassword: true
+       $.validator.addMethod('validPassword',
+            function(value, element, param) {
+                if (value != '') {
+                    if (value.match(/.*[a-z]+.*/i) == null) {
+                        return false;
                     }
-                },
-                messages: {
-                    email: {
-                        remote: 'email already taken'
+                    if (value.match(/.*\d+.*/) == null) {
+                        return false;
                     }
                 }
-            });
 
+                return true;
+            },
+            'Hasło musi zawierać co najmniej 1 literę i 1 cyfrę.'
+        );
+	
+		$(document).ready(function() {	
+			var userId = '{{ user.id }}';
+			
+			$('#formSignup').validate( {
+				errorClass: 'text-danger',
+				rules: {
+					email: {
+						required: true,
+						email: true,
+						remote: {
+							url: '/account/validate-email',
+							data: {
+								ignore_id: function() {
+									return userId;
+								}
+							}
+						}
+					},
+					password: {
+						required: true,
+						minlength: 6,
+						maxlength: 20,
+						validPassword: true
+					},
+					name: {
+						maxlength: 20
+					}	
+				},
+				messages: {
+					email: {
+						required: "Pole nie może być puste.",
+						email: "Prosze wpisać poprawny adres e-mail.",
+						remote: "Podany adres e-mail jest zajęty."
+					}, 
+					name: {
+						required: "Pole nie może być puste.",
+						maxlength: "Imię może mieć długość maksymalnie 20 znaków."
+					},
+					password: {
+						required: "Pole nie może być puste.",
+						minlength: "Hasło musi składać się z co najmniej 6 znaków.",
+						maxlength: "Hasło musi składać się z maksymalnie 20 znaków."
+					}
+				},
+				errorPlacement: function ($error, $element) {
+					var name = $element.attr("name");
 
-            /**
-              * Show password toggle button
-              */
-            $('#inputPassword').hideShowPassword({
-                show: false,
-                innerToggle: 'focus'
-            });
-        });
-    </script>
+					$("#error" + name).append($error);
+				}
+
+			});		
+			
+			
+		});
+		
+	</script>
 
 {% endblock %}
 
@@ -75,6 +112,9 @@
                             </div>
                             <input id="inputName" name="name" placeholder="Name" autofocus value="{{ user.name }}" required class="form-control" />    
 
+                            <small id="errorname"></small>	
+						
+						    <span class="error">{{ user.errors.name }}</span>
 
                         </div>
                         <div class="input-group mt-3">
@@ -84,15 +124,27 @@
                             <input id="inputEmail" name="email" placeholder="email address" value="{{ user.email }}" required type="email" class="form-control" />
                         </div>
 
+                        <small id="erroremail"></small>
+						
+						<span class="error">{{ user.errors.email }}</span>
+
                         <div class="input-group mt-3">
                             <div class="input-group-prepend">
                                 <span class="input-group-text"> <i class="fa fa-lock"></i></span>
-                                <input type="password" id="inputPassword" name="password" placeholder="Password" required class="form-control" />
                             </div>
-
-                            
+                            <input type="password" id="inputPassword" name="password" data-toggle="password" placeholder="Password" required class="form-control">
+                            <div class="input-group-append" style="cursor:pointer">
+                                <span class="input-group-text" onclick="myFunction('inputPassword')">
+                                    <i id="showHideIcon" class="fa fa-eye"></i>
+                                </span>
+                            </div>  
                         </div>
+
+                        <small id="errorpassword"></small>
+						
+						<span class="error">{{ user.errors.password }}</span>
                         
+
                         <button type="submit" class="btn btn-hover color-8 btn-lg btn-block mt-3 mb-2">Sign up</button>
                         Already have an account? <a href="/home/index">Log in</a>
 
