@@ -55,18 +55,18 @@
 				},
 				messages: {
 					email: {
-						required: "Pole nie może być puste.",
-						email: "Prosze wpisać poprawny adres e-mail.",
-						remote: "Podany adres e-mail jest zajęty."
+						required: "The field cannot be empty.",
+						email: "Please enter a valid email address.",
+						remote: "The e-mail address provided is taken."
 					}, 
 					name: {
-						required: "Pole nie może być puste.",
-						maxlength: "Imię może mieć długość maksymalnie 20 znaków."
+						required: "The field cannot be empty.",
+						maxlength: "The name can be up to 20 characters long."
 					},
 					password: {
-						required: "Pole nie może być puste.",
-						minlength: "Hasło musi składać się z co najmniej 6 znaków.",
-						maxlength: "Hasło musi składać się z maksymalnie 20 znaków."
+						required: "The field cannot be empty.",
+						minlength: "The password must consist of at least 6 characters.",
+						maxlength: "The name can be up to 20 characters long."
 					}
 				},
 				errorPlacement: function ($error, $element) {
@@ -111,12 +111,13 @@
                                 <span class="input-group-text"> <i class="fas fa-user-alt"></i> </span>
                             </div>
                             <input id="inputName" name="name" placeholder="Name" autofocus value="{{ user.name }}" required class="form-control" />    
-
-                            <small id="errorname"></small>	
-						
-						    <span class="error">{{ user.errors.name }}</span>
-
                         </div>
+
+                        <small id="errorname"></small>	
+                    
+                        <span class="error">{{ user.errors.name }}</span>
+
+                        
                         <div class="input-group mt-3">
                             <div class="input-group-prepend">
                                 <span class="input-group-text"> <i class="fas fa-envelope"></i> </span>
