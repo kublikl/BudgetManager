@@ -10,8 +10,6 @@ use \App\Auth;
 
 /**
  * User model
- *
- * PHP version 7.0
  */
 class User extends \Core\Model
 {
@@ -507,42 +505,26 @@ class User extends \Core\Model
 
      public static function copyIncomesCategories($user_id)
      {
-         //$user_id = self::getNewUserId();
-         $sql = 'INSERT INTO incomes_category_assigned_to_users (name) SELECT name FROM incomes_category_default';
-         $db = static::getDB();
-         //$db->exec($sql);
-         $stmt = $db->prepare($sql);
- 
-         $sql = 'UPDATE incomes_category_assigned_to_users SET `user_id`= :user_id  ORDER BY id DESC LIMIT 4';
-         $db = static::getDB();
-         $stmt = $db->prepare($sql);
-         $stmt->bindParam(':user_id', $user_id, PDO::PARAM_INT); 
-         $stmt->execute();
+
+        $sqlInsert = 'INSERT INTO incomes_category_assigned_to_users (user_id, name) SELECT :user_id, name FROM incomes_category_default';
+        $db = static::getDB();
+        $stmtInsert = $db->prepare($sqlInsert);
+        $stmtInsert->bindParam(':user_id', $user_id, PDO::PARAM_INT);
+        $stmtInsert->execute();
+    
+        $sqlUpdate = 'UPDATE incomes_category_assigned_to_users SET user_id = :user_id ORDER BY id DESC LIMIT 4';
+        $stmtUpdate = $db->prepare($sqlUpdate);
+        $stmtUpdate->bindParam(':user_id', $user_id, PDO::PARAM_INT);
+        $stmtUpdate->execute();
      }
 
      public static function copyExpensesCategories($user_id)
      {
-        /*
-         $sql = 'INSERT INTO expenses_category_assigned_to_users (name) SELECT name FROM expenses_category_default';
-         $db = static::getDB();
-         //$db->exec($sql);
-         $stmt = $db->prepare($sql);
- 
-         $sql = 'UPDATE expenses_category_assigned_to_users SET `user_id`= :user_id  ORDER BY id DESC LIMIT 16';
-         $db = static::getDB();
-         $stmt = $db->prepare($sql);
-         $stmt->bindParam(':user_id', $user_id, PDO::PARAM_INT); 
-         $stmt->execute();
-         */
-
-         
          $sqlInsert = 'INSERT INTO expenses_category_assigned_to_users (user_id, name) SELECT :user_id, name FROM expenses_category_default';
          $db = static::getDB();
          $stmtInsert = $db->prepare($sqlInsert);
          $stmtInsert->bindParam(':user_id', $user_id, PDO::PARAM_INT);
          $stmtInsert->execute();
-     
-         // Dodatkowa logika, jeśli potrzebna
      
          $sqlUpdate = 'UPDATE expenses_category_assigned_to_users SET user_id = :user_id ORDER BY id DESC LIMIT 16';
          $stmtUpdate = $db->prepare($sqlUpdate);
@@ -552,15 +534,15 @@ class User extends \Core\Model
 
      public static function copyPaymentMethods($user_id)
      {
-         $sql = 'INSERT INTO payment_methods_assigned_to_users (name) SELECT name FROM payment_methods_default';
-         $db = static::getDB();
-         //$db->exec($sql);
-         $stmt = $db->prepare($sql);
- 
-         $sql = 'UPDATE payment_methods_assigned_to_users SET `user_id`= :user_id  ORDER BY id DESC LIMIT 3';
-         $db = static::getDB();
-         $stmt = $db->prepare($sql);
-         $stmt->bindParam(':user_id', $user_id, PDO::PARAM_INT); 
-         $stmt->execute();
+        $sqlInsert = 'INSERT INTO payment_methods_assigned_to_users (user_id, name) SELECT :user_id, name FROM payment_methods_default';
+        $db = static::getDB();
+        $stmtInsert = $db->prepare($sqlInsert);
+        $stmtInsert->bindParam(':user_id', $user_id, PDO::PARAM_INT);
+        $stmtInsert->execute();
+    
+        $sqlUpdate = 'UPDATE payment_methods_assigned_to_users SET user_id = :user_id ORDER BY id DESC LIMIT 3';
+        $stmtUpdate = $db->prepare($sqlUpdate);
+        $stmtUpdate->bindParam(':user_id', $user_id, PDO::PARAM_INT);
+        $stmtUpdate->execute();
      }
 }

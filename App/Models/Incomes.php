@@ -14,6 +14,10 @@ class Incomes extends \Core\Model
   public $date;
   public $comment;
   public $user_id;
+  public $newIncomeCategory;
+  public $incomeCategory;
+  public $incomeCategoryId;
+
 
 
 
@@ -138,4 +142,171 @@ class Incomes extends \Core\Model
         return number_format($sumIncomes, 2, '.', '');
     }
 
+    public static function editIncomesCat($category_id, $newIncomeName)
+    {
+        $sql = 'UPDATE incomes_category_assigned_to_users
+            SET name = :newIncomeName
+            WHERE id = :category_id';
+
+        $db = static::getDB();
+        $stmt = $db->prepare($sql);
+
+        $stmt->bindValue(':newIncomeName', $newIncomeName, PDO::PARAM_STR);
+        $stmt->bindValue(':category_id', $category_id, PDO::PARAM_STR);
+
+        return $stmt->execute();
+    }
+    public static function deleteIncomesCat($category_id)
+    {
+        $sql = 'DELETE FROM incomes_category_assigned_to_users
+            WHERE id = :category_id';
+
+        $db = static::getDB();
+        $stmt = $db->prepare($sql);
+        $stmt->bindValue(':category_id', $category_id, PDO::PARAM_INT);
+        $stmt->execute();
+
+        $sql = 'DELETE FROM incomes
+            WHERE income_category_assigned_to_user_id = :category_id';
+
+        $stmt = $db->prepare($sql);
+        $stmt->bindValue(':category_id', $category_id, PDO::PARAM_INT);
+        return $stmt->execute();
+
+    } 
+    
+    public function addIncomeCategory()
+	{	
+		$this->validateNewCategoryName();
+		
+		if (empty($this->errors)) {
+			
+			$sql = "INSERT INTO incomes_category_assigned_to_users VALUES (NULL, :user_id, :name)";
+									
+			$db = static::getDB();
+            $stmt = $db->prepare($sql);
+
+	
+            $stmt->bindValue(':user_id', $_SESSION['user_id'], PDO::PARAM_INT);
+            $stmt->bindValue(':name', $this->newIncomeCategory, PDO::PARAM_STR);
+
+            return $stmt->execute();		
+			
+		}
+		return false;
+	}
+
+    protected function validateNewCategoryName()
+	{
+        
+		if(strlen($this->newIncomeCategory)<1 || strlen($this->newIncomeCategory)>40) {
+		$this->errors['incomeCategory'] = "The income category must be between 1 and 40 characters long.";
+		}
+
+		$sql = "SELECT * FROM incomes_category_assigned_to_users WHERE user_id = :user_id AND name = :incomeName";
+		
+		$db = static::getDB();
+
+		$stmt = $db->prepare($sql);
+
+		$stmt->bindValue(':user_id', $_SESSION['user_id'], PDO::PARAM_INT);
+		$stmt->bindValue(':incomeName', $this->newIncomeCategory, PDO::PARAM_STR);
+
+		$stmt->execute();
+		$result = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+        
+		
+		if(count($result) >= 1){
+		$this->errors['newIncomeCategory'] = "Category already exists.";	
+		}
+			
+	}
+    public function updateCategory() 
+	{	
+        if(strlen($this->incomeCategory)<1 || strlen($this->incomeCategory)>40) {
+		$this->errors['incomeCategory'] = "Kategoria przychodu musi zawierać od 1 do 40 znaków.";
+		}
+		
+		$sql = "SELECT * FROM incomes_category_assigned_to_users WHERE user_id = :user_id AND name = :incomeName AND id <> :id";
+		
+		$db = static::getDB();
+
+		$stmt = $db->prepare($sql);
+
+
+		$stmt->bindValue(':user_id', $_SESSION['user_id'], PDO::PARAM_INT);
+		$stmt->bindValue(':id', $this->incomeCategoryId, PDO::PARAM_INT);
+		$stmt->bindValue(':incomeName', $this->incomeCategory, PDO::PARAM_STR);
+
+		$stmt->execute();
+		$result = $stmt->fetchAll(PDO::FETCH_ASSOC);
+		
+		if(count($result)==1){
+		$this->errors['newIncomeCategory'] = "Podana kategoria już istnieje.";	
+		}
+
+        if (empty($this->errors)) {
+			$sql = "UPDATE incomes_category_assigned_to_users SET name = :name WHERE id = :id";
+			
+			$db = static::getDB();
+            $stmt = $db->prepare($sql);
+			
+			$stmt->bindValue(':id', $this->incomeCategoryId, PDO::PARAM_INT);
+            $stmt->bindValue(':name', $this->incomeCategory, PDO::PARAM_STR);
+
+            return $stmt->execute();
+		}
+		return false;
+	}
+    public function deleteCategory()
+	{		
+	
+			$this->updateCategoryToOther();
+	
+			$sql = "DELETE FROM incomes_category_assigned_to_users WHERE id = :id";
+									
+			$db = static::getDB();
+            $stmt = $db->prepare($sql);
+
+            $stmt->bindValue(':id', $this->incomeCategoryId, PDO::PARAM_INT);
+
+            return $stmt->execute();		
+	}
+    protected function updateCategoryToOther()
+	{
+		$sql = "UPDATE incomes
+				SET income_category_assigned_to_user_id = :otherCategoryId 
+				WHERE income_category_assigned_to_user_id = :categoryId";
+		
+		$db = static::getDB();
+		$stmt = $db->prepare($sql);		
+						
+		$stmt->bindValue(':categoryId', $this->incomeCategoryId, PDO::PARAM_INT);
+		$stmt->bindValue(':otherCategoryId', $this->getOtherCategoryId(), PDO::PARAM_INT);
+		
+		return	$stmt->execute();			
+	}
+
+    protected function getOtherCategoryId() 
+	{
+		
+		$sql = "SELECT id FROM incomes_category_assigned_to_users WHERE user_id = :user_id AND name = :name";
+		
+		$db = static::getDB();
+		
+		$stmt = $db->prepare($sql);
+		
+		
+		$stmt->bindValue(':user_id', $_SESSION['user_id'], PDO::PARAM_INT);
+		$stmt->bindValue(':name', 'Another', PDO::PARAM_STR);
+		
+		$stmt->execute();
+		
+		$result = $stmt->fetch(PDO::FETCH_ASSOC);
+		
+	
+        return $result['id'];
+	
+	}
 }
