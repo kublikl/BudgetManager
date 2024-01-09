@@ -38,10 +38,10 @@ class Settings extends Authenticated
     public function showAction()
     {
         View::renderTemplate('Settings/settings.html', [
-           // 'user' => $_SESSION['user_id'],
             'user_incomes' => Incomes::getIncomeCategories(),
-            'expense_category' => Expenses::getExpenseCategories(),
-            'payment_method' => Expenses::getPaymentMethods()
+            'user_expenses' => Expenses::getExpenseCategories(),
+            'payment_method' => Expenses::getPaymentMethods(),
+						//'user' => $this->user
             
         ]);
     }
@@ -83,13 +83,13 @@ class Settings extends Authenticated
 
 			if ($income->updateCategory()) {
 
-				Flash::addMessage('Kategoria przychodów została zedytowana.');
+				Flash::addMessage('The income category has been edited.');
 
 				$this->redirect('/settings/show');
 
 			} else {
 					
-				Flash::addMessage('Podana kategoria już istnieje.',Flash::DANGER);	
+				Flash::addMessage('Category already exists.', Flash::DANGER);	
 					
 				$this->redirect('/settings/show');
 			} 	
@@ -105,7 +105,7 @@ class Settings extends Authenticated
 
 			$income->deleteCategory();
 
-			Flash::addMessage('Kategoria przychodów została usunięta, a należące do niej transakcje przeniesiono do kategorii "Inne". Możesz edytować ich kategorię w przeglądzie bilansu.');
+			Flash::addMessage('The income category has been removed and its transactions have been moved to the "Another" category');
 
 			$this->redirect('/settings/show');
 			
@@ -113,5 +113,71 @@ class Settings extends Authenticated
 			$this->redirect('/settings/show');
 		}
 
+	}
+	public function addExpenseCategory() 
+	{	
+		if(isset($_POST['newExpenseCategory'])) {
+			
+			$expense = new Expenses($_POST);
+
+			if($expense->addExpenseCategory()) {
+
+			Flash::addMessage('New category added successfully!');
+
+			$this->redirect('/settings/show');
+			} else {
+				
+				Flash::addMessage('Category already exists.', Flash::DANGER);	
+					
+				$this->redirect('/settings/show');	
+			}
+			
+		} else {
+			$this->redirect('/settings/show');
+		}
+	}	
+	public function updateExpenseCategory() 
+	{
+		if(isset($_POST['expenseCategory'])) {
+
+			
+			$expense = new Expenses($_POST);
+
+			if ($expense->updateCategory()) {
+
+				Flash::addMessage('The expense category has been edited.');
+
+				$this->redirect('/settings/show');
+
+			} else {
+					
+				Flash::addMessage('Category already exists.',Flash::DANGER);	
+					
+				$this->redirect('/settings/show');
+			} 	
+		} else {
+			$this->redirect('/settings/show');
+		}
+	}
+	public function deleteExpenseCategory() 
+	{	
+
+		if(isset($_POST['expenseCategoryId'])) {
+			
+			$expense = new Expenses($_POST);
+
+			$expense->deleteCategory();
+
+			Flash::addMessage('The expense category has been removed and its transactions have been moved to the "Another" category');
+
+			$this->redirect('/settings/show');
+			
+		} else {
+
+			Flash::addMessage('Could not delete category!');
+
+			$this->redirect('/settings/show');
+		}
 	}		
+	
 }

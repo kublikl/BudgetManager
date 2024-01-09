@@ -4,7 +4,7 @@
 
 {% block footer %}
 	<script src="../js/showHidePassword.js"></script>
-	<script src="../js/sortTable.js"></script>
+	
 
 	<script>
 		function toggleSettingPanel(idOfButton, idOfPanel) {
@@ -33,7 +33,7 @@
 
                 return true;
             },
-            'Hasło musi zawierać co najmniej 1 literę i 1 cyfrę.'
+            'The password must contain at least 1 letter and 1 number.'
         );
 	
 		$(document).ready(function() {
@@ -59,103 +59,10 @@
 				}).get();
 				
 				$('#expenseCategoryModal').val(data[0]);
-				$('#expenseLimitModal').val(data[1]);
-				$('#expenseCategoryIdModal').val(data[3]);
-				
+				$('#expenseCategoryIdModal').val(data[2]);
 			});			
 			
-			$('.editPaymentBtn').on('click',function() {
-				$('#editPaymentModal').modal('show');
-				
-				$tr = $(this).closest('tr');
-				var data = $tr.children("td").map(function() {
-					return $(this).text();
-				}).get();
-				
-				$('#paymentModal').val(data[0]);
-				$('#paymentIdModal').val(data[2]);
-				
-			});
-			
-			var userId = '{{ user.id }}';
-			
-			$('#editProfileForm').validate( {
-				errorClass: 'text-danger',
-				rules: {
-					email: {
-						required: true,
-						email: true,
-						remote: {
-							url: '/account/validate-email',
-							data: {
-								ignore_id: function() {
-									return userId;
-								}
-							}
-						}
-					},
-					name: {
-						maxlength: 20
-					}	
-				},
-				messages: {
-					email: {
-						required: "The field cannot be empty.",
-						email: "Please enter a valid email address.",
-						remote: "The email address you provided is used."
-					}, 
-					name: {
-						required: "The field cannot be empty.",
-						maxlength: "The name can be up to 20 characters long."
-					}
-				},
-				errorPlacement: function ($error, $element) {
-					var name = $element.attr("name");
-
-					$("#error" + name).append($error);
-				}
-
-			});	
-			
-			$('#editPasswordForm').validate( {
-				errorClass: 'text-danger',
-				rules: {
-
-					password: {
-						required: true,
-						minlength: 6,
-						maxlength: 20,
-						validPassword: true
-					},
-					oldPassword: {
-						remote: {
-							url: '/account/validate-password',
-							data: {
-								user_id: function() {
-									return userId;
-								}								
-							}
-						}
-					}
-				},
-				messages: {
-					password: {
-						required: "The field cannot be empty.",
-						minlength: "The password must consist of at least 6 characters.",
-						maxlength: "The password must be a maximum of 20 characters."
-					},					
-					oldPassword: {
-						required: "The field cannot be empty.",
-						remote: "The password is incorrect."
-					}
-				},
-				errorPlacement: function ($error, $element) {
-					var name = $element.attr("name");
-
-					$("#error" + name).append($error);
-				}
-
-			});			
+		
 			
 			
 		});
@@ -168,12 +75,10 @@
 
 {% block body %}
 <section class="Settings">
-    <div class="row">
+	<div class="row">
 		<div class="main-container py-2 px-3 col-md-8 offset-md-2 col-lg-6 offset-lg-3 my-5">
-		
 			<div class="row">	
 				<div class="welcome-message mt-2 mb-2 mx-2 py-3 px-4 w-100">
-				
 					<div class="row">
 						<div class="col-12 text-center">
 							<h2 class="mb-xl-4">Settings</h2>
@@ -195,76 +100,160 @@
 								<tr class="editIncomeBtn"><td>{{ user_incomes.name }}</td>
 								<td><i class="fas fa-edit"></i></td>
 								<td style="display:none;">{{ user_incomes.id }}</td></tr>
-							{% endfor %}
+								{% endfor %}
 							</tbody>
 						</table>
-                        <div class="row">
+
+						<div class="row">
 							<div class="col mb-2">
 								<button class="btn btn-hover no-focus btn-sm btn-block" style="height:30px" data-toggle="modal" data-target="#addIncomeCategoryModal">Add a new category</button>
 							</div>						
 						</div>
-                    </div>
+						
+						</div>
 
-                    <div class="modal fade" id="addIncomeCategoryModal" tabindex="-1" role="dialog" aria-labelledby="addIncomeCategory" aria-hidden="true" >
-                        <div class="modal-dialog" role="document">
-                            <div class="modal-content">
-                                <div class="modal-header">
-                                    <h4 id="addIncomeCategory" class="modal-title">Add a income category</h4>
-                                    <button type="button" class="close" data-dismiss="modal" aria-label="Zamknij">
-                                      <span aria-hidden="true">&times;</span>
-                                    </button>
-                                </div>
-                                <form action="/settings/addIncomeCategory" method="post" id="newIncomeCategoryForm">
-                                    <div class="modal-body">
-                                            
-                                        <div class="input-group">
-                                            <div class="input-group-prepend">
-                                                <span class="input-group-text"><i class="fas fa-shopping-cart"></i></span>
-                                            </div>
-                                            <input type="text" class="form-control"  placeholder="Income Category" maxlength="40" step="any" aria-label="IncomeCategory" name="newIncomeCategory" required >
-                                        </div>
-    
-                                    </div>
-                                                                        
-                                    <div class="modal-footer">
-                                        <button type="submit" class="btn btn-hover color-8">Confirm</button>
-                                    </div>  
-                                </form>	
-                            </div>
-                        </div>
-                    </div>			
-                    <div class="modal fade" id="editIncomeModal" tabindex="-1" role="dialog" aria-labelledby="editTheIncomeCategory" aria-hidden="true" >
-                        <div class="modal-dialog" role="document">
-                            <div class="modal-content">
-                                <div class="modal-header">
-                                    <h4 id="editTheIncomeCategory" class="modal-title">Edit the income category</h4>
-                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                      <span aria-hidden="true">&times;</span>
-                                    </button>
-                                </div>
-                                <form action="" method="post" id='editIncomeForm'>
-                                    <div class="modal-body">
-                                            
-                                        <input type="hidden" id="incomeCategoryIdModal" name="incomeCategoryId">
-                                        <div class="input-group">
-                                            <div class="input-group-prepend">
-                                                <span class="input-group-text"><i class="fas fa-shopping-cart"></i></span>
-                                            </div>
-                                            <input type="text" id="incomeCategoryModal" class="form-control"  placeholder="Income Category" maxlength="40" step="any" aria-label="incomeCategory" name="incomeCategory" required >
-                                        </div>
-    
-                                    </div>
-                                                                        
-                                    <div class="modal-footer">
-                                        <button id="incomeModalSubmit" formaction="/settings/updateIncomeCategory"  type="submit" class="btn btn-hover btn-success">Confirm</button>
-                                        <button type="submit" formaction="/settings/deleteIncomeCategory" class="btn btn-hover color-11">Remove Category</button>
-                                    </div>
-                                    
-                                </form>	
-                            </div>
-                            
-                        </div>
-                    </div>
+						<div class="modal fade" id="addIncomeCategoryModal" tabindex="-1" role="dialog" aria-labelledby="addIncomeCategory" aria-hidden="true" >
+							<div class="modal-dialog" role="document">
+								<div class="modal-content">
+									<div class="modal-header">
+										<h4 id="addIncomeCategory" class="modal-title">Add a income category</h4>
+										<button type="button" class="close" data-dismiss="modal" aria-label="Zamknij">
+											<span aria-hidden="true">&times;</span>
+										</button>
+									</div>
+									<form action="/settings/addIncomeCategory" method="post" id="newIncomeCategoryForm">
+										<div class="modal-body">
+														
+											<div class="input-group">
+												<div class="input-group-prepend">
+														<span class="input-group-text"><i class="fas fa-shopping-cart"></i></span>
+												</div>
+												<input type="text" class="form-control"  placeholder="Income Category" maxlength="40" step="any" aria-label="IncomeCategory" name="newIncomeCategory" required >
+											</div>
+
+										</div>
+																												
+										<div class="modal-footer">
+												<button type="submit" class="btn-success btn-hover">Confirm</button>
+										</div>  
+									</form>	
+								</div>
+							</div>
+						</div>
+
+						<div class="modal fade" id="editIncomeModal" tabindex="-1" role="dialog" aria-labelledby="editTheIncomeCategory" aria-hidden="true" >
+							<div class="modal-dialog" role="document">
+								<div class="modal-content">
+									<div class="modal-header">
+										<h4 id="editTheIncomeCategory" class="modal-title">Edit the income category</h4>
+										<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+											<span aria-hidden="true">&times;</span>
+										</button>
+									</div>
+									<form action="" method="post" id='editIncomeForm'>
+										<div class="modal-body">
+														
+											<input type="hidden" id="incomeCategoryIdModal" name="incomeCategoryId">
+											<div class="input-group">
+												<div class="input-group-prepend">
+														<span class="input-group-text"><i class="fas fa-shopping-cart"></i></span>
+												</div>
+												<input type="text" id="incomeCategoryModal" class="form-control"  placeholder="Income Category" maxlength="40" step="any" aria-label="incomeCategory" name="incomeCategory" required >
+											</div>
+
+										</div>
+																												
+										<div class="modal-footer">
+											<button id="incomeModalSubmit" formaction="/settings/updateIncomeCategory"  type="submit" class="btn btn-hover btn-success">Confirm</button>
+											<button type="submit" formaction="/settings/deleteIncomeCategory" class="btn btn-hover color-11">Remove Category</button>
+										</div>
+									</form>	
+								</div>
+							</div>
+						</div>
+						
+            <button id="settingButton2" class="btn btn-hover no-focus  btn-block mt-2" onClick="toggleSettingPanel(this.id,'settingTogglePanel2')">Expense Category <i class="fas fa-chevron-down setting-icon"></i></button>
+						
+						<div id="settingTogglePanel2" class="settingTogglePanel w-100 px-2">
+						
+							<table id="tableOfExpensesCategories" class="table table-hover table-active text-white table-sm table-text">
+								
+								<thead>	
+									<tr>
+									<th onclick="sortTableAlphabetically('tableOfExpensesCategories')" scope="col">Category <i class="fas fa-sort"></i></th>
+									<th scope="col"  width="5%"></th>
+									<th scope="col" style="display:none;">ID</th></tr>
+								</thead>
+								<tbody>
+									{% for user_expenses in user_expenses %}
+									<tr class="editExpenseBtn"><td>{{ user_expenses.name }}</td>
+									<td><i class="fas fa-edit"></i></td>
+									<td style="display:none;">{{ user_expenses.id }}</td></tr>
+								{% endfor %}
+								</tbody>
+							</table>
+
+              <div class="row">
+								<div class="col mb-2">
+									<button class="btn btn-hover no-focus btn-sm btn-block" style="height:30px" data-toggle="modal" data-target="#addExpenseCategoryModal">Add a new category</button>
+								</div>						
+							</div>
+						</div>
+            <div class="modal fade" id="addExpenseCategoryModal" tabindex="-1" role="dialog" aria-labelledby="addExpenseCategory" aria-hidden="true" >
+							<div class="modal-dialog" role="document">
+								<div class="modal-content">
+									<div class="modal-header">
+										<h4 id="addExpenseCategory" class="modal-title">Add a expense category</h4>
+										<button type="button" class="close" data-dismiss="modal" aria-label="close">
+										  <span aria-hidden="true">&times;</span>
+										</button>
+									</div>
+									<form action="/settings/addExpenseCategory" method="post" id="newExpenseCategoryForm">
+										<div class="modal-body">						
+											<div class="input-group">
+												<div class="input-group-prepend">
+													<span class="input-group-text"><i class="fas fa-shopping-cart"></i></span>
+												</div>
+												<input type="text" class="form-control"  placeholder="Expense Category" maxlength="40" step="any" aria-label="expenseCategory" name="newExpenseCategory" required >
+											</div>
+										</div>									
+										<div class="modal-footer">
+											<button type="submit" class="btn-success btn-hover">Confirm</button>
+										</div>
+									</form>	
+								</div>
+							</div>
+						</div>	
+            <div class="modal fade" id="editExpenseModal" tabindex="-1" role="dialog" aria-labelledby="editTheExpenseCategory" aria-hidden="true" >
+							<div class="modal-dialog" role="document">
+								<div class="modal-content">
+									<div class="modal-header">
+										<h4 id="editExpenseCategory" class="modal-title">Edit a expense category</h4>
+										<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+										  <span aria-hidden="true">&times;</span>
+										</button>
+									</div>
+									<form action="" method="post" id='editExpenseForm'>
+										<div class="modal-body">
+												
+											<input type="hidden" id="expenseCategoryIdModal" name="expenseCategoryId">
+											<div class="input-group mb-3">
+												<div class="input-group-prepend">
+													<span class="input-group-text"><i class="fas fa-shopping-cart"></i></span>
+												</div>
+												<input type="text" id="expenseCategoryModal" class="form-control"  placeholder="Expense Category" maxlength="40" step="any" aria-label="expenseCategory" name="expenseCategory" required >
+											</div>											
+										</div>
+																			
+										<div class="modal-footer">
+											<button id="expenseModalSubmit" formaction="/settings/updateExpenseCategory"  type="submit" class="btn btn-hover btn-success">Confirm</button>
+											<button type="submit" formaction="/settings/deleteExpenseCategory" class="btn btn-hover color-11">Remove</button>
+										</div>
+										
+									</form>	
+								</div>			
+							</div>
+						</div>
 
     <!--div class="container my-3">
         <header>

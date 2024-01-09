@@ -225,7 +225,7 @@ class Incomes extends \Core\Model
     public function updateCategory() 
 	{	
         if(strlen($this->incomeCategory)<1 || strlen($this->incomeCategory)>40) {
-		$this->errors['incomeCategory'] = "Kategoria przychodu musi zawierać od 1 do 40 znaków.";
+		$this->errors['incomeCategory'] = "The income category must be between 1 and 40 characters long.";
 		}
 		
 		$sql = "SELECT * FROM incomes_category_assigned_to_users WHERE user_id = :user_id AND name = :incomeName AND id <> :id";
@@ -243,7 +243,7 @@ class Incomes extends \Core\Model
 		$result = $stmt->fetchAll(PDO::FETCH_ASSOC);
 		
 		if(count($result)==1){
-		$this->errors['newIncomeCategory'] = "Podana kategoria już istnieje.";	
+		$this->errors['newIncomeCategory'] = "Category already exists.";	
 		}
 
         if (empty($this->errors)) {

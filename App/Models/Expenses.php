@@ -15,6 +15,12 @@ class Expenses extends \Core\Model
   public $user_id;
   public $payment;
   public $payment_method;
+  public $newExpenseCategory;
+  public $expenseCategory;
+  public $expenseCategoryId;
+  
+  
+  
      // Error messages
 
     public $errors = []; //tablica z błędami
@@ -134,11 +140,11 @@ class Expenses extends \Core\Model
     
             $sql = 'SELECT * FROM payment_methods_assigned_to_users WHERE user_id=:user_id';
             $db = static::getDB();
-            $incomeCategories = $db->prepare($sql);
-            $incomeCategories->bindValue(':user_id', $user_id, PDO::PARAM_INT);
-            $incomeCategories->execute();
+            $expenseCategories = $db->prepare($sql);
+            $expenseCategories->bindValue(':user_id', $user_id, PDO::PARAM_INT);
+            $expenseCategories->execute();
     
-            return $incomeCategories->fetchAll(PDO::FETCH_ASSOC);
+            return $expenseCategories->fetchAll(PDO::FETCH_ASSOC);
         }
     
         // WHEN THE USER IS NOT LOGGED IN, IT RETURN THE ARRAY
@@ -177,4 +183,144 @@ class Expenses extends \Core\Model
 
         return number_format($sumExpenses, 2, '.', '');
     }
+    public function addExpenseCategory()
+	{		
+        $this->validateNewCategoryName();
+
+		if (empty($this->errors)) {
+			
+			$sql = "INSERT INTO expenses_category_assigned_to_users VALUES (NULL, :user_id, :name)";
+									
+			$db = static::getDB();
+            $stmt = $db->prepare($sql);
+	
+            $stmt->bindValue(':user_id', $_SESSION['user_id'], PDO::PARAM_INT);
+            $stmt->bindValue(':name', $this->newExpenseCategory, PDO::PARAM_STR);
+
+            return $stmt->execute();		
+			
+		}
+		return false;
+	}	
+    
+    protected function validateNewCategoryName()
+	{
+        
+		if(strlen($this->newExpenseCategory)<1 || strlen($this->newExpenseCategory)>40) {
+		$this->errors['expenseCategory'] = "The expense category must be between 1 and 40 characters long.";
+		}
+
+		$sql = "SELECT * FROM expenses_category_assigned_to_users WHERE user_id = :user_id AND name = :expenseName";
+		
+		$db = static::getDB();
+
+		$stmt = $db->prepare($sql);
+
+		$stmt->bindValue(':user_id', $_SESSION['user_id'], PDO::PARAM_INT);
+		$stmt->bindValue(':expenseName', $this->newExpenseCategory, PDO::PARAM_STR);
+
+		$stmt->execute();
+		$result = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+        
+		
+		if(count($result) >= 1){
+		$this->errors['newExpenseCategory'] = "Category already exists.";	
+		}
+			
+	}
+    public function updateCategory() 
+	{	
+        if(strlen($this->expenseCategory)<1 || strlen($this->expenseCategory)>40) {
+		$this->errors['expenseCategory'] = "The expense category must be between 1 and 40 characters long.";
+		}
+		
+		$sql = "SELECT * FROM expenses_category_assigned_to_users WHERE user_id = :user_id AND name = :expenseName AND id <> :id";
+		
+		$db = static::getDB();
+
+		$stmt = $db->prepare($sql);
+
+
+		$stmt->bindValue(':user_id', $_SESSION['user_id'], PDO::PARAM_INT);
+		$stmt->bindValue(':id', $this->expenseCategoryId, PDO::PARAM_INT);
+		$stmt->bindValue(':expenseName', $this->expenseCategory, PDO::PARAM_STR);
+
+		$stmt->execute();
+
+      
+		$result = $stmt->fetchAll(PDO::FETCH_ASSOC);
+		
+		if(count($result)==1){
+		$this->errors['newExpenseCategory'] = "Category already exists.";	
+		}
+
+        if (empty($this->errors)) {
+          
+			$sql = "UPDATE expenses_category_assigned_to_users SET name = :name WHERE id = :id";
+			
+			$db = static::getDB();
+            $stmt = $db->prepare($sql);
+			
+			$stmt->bindValue(':id', $this->expenseCategoryId, PDO::PARAM_INT);
+            $stmt->bindValue(':name', $this->expenseCategory, PDO::PARAM_STR);
+
+            return $stmt->execute();
+          
+		}
+		return false;
+        
+    }
+    public function deleteCategory()
+	{	
+  
+			$this->updateCategoryToOther();
+	
+			$sql = "DELETE FROM expenses_category_assigned_to_users WHERE id = :id";
+									
+			$db = static::getDB();
+            $stmt = $db->prepare($sql);
+
+            $stmt->bindValue(':id', $this->expenseCategoryId, PDO::PARAM_INT);
+
+            return $stmt->execute();
+            		
+	}
+    protected function updateCategoryToOther()
+	{
+		$sql = "UPDATE expenses
+				SET expense_category_assigned_to_user_id = :otherCategoryId 
+				WHERE expense_category_assigned_to_user_id = :categoryId";
+		
+		$db = static::getDB();
+		$stmt = $db->prepare($sql);		
+						
+		$stmt->bindValue(':categoryId', $this->expenseCategoryId, PDO::PARAM_INT);
+		$stmt->bindValue(':otherCategoryId', $this->getOtherCategoryId(), PDO::PARAM_INT);
+		
+		return	$stmt->execute();			
+	}
+
+    protected function getOtherCategoryId() 
+	{
+		
+		$sql = "SELECT id FROM expenses_category_assigned_to_users WHERE user_id = :user_id AND name = :name";
+		
+		$db = static::getDB();
+		
+		$stmt = $db->prepare($sql);
+		
+		
+		$stmt->bindValue(':user_id', $_SESSION['user_id'], PDO::PARAM_INT);
+		$stmt->bindValue(':name', 'Another', PDO::PARAM_STR);
+		
+		$stmt->execute();
+		
+		$result = $stmt->fetch(PDO::FETCH_ASSOC);
+		
+	
+        return $result['id'];
+	
+	}
+    
 }
