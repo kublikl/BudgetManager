@@ -4,6 +4,7 @@
 
 {% block footer %}
 	<script src="../js/showHidePassword.js"></script>
+	<script src="../js/sortTable.js"></script>
 	
 
 	<script>
@@ -62,6 +63,28 @@
 				$('#expenseCategoryIdModal').val(data[2]);
 			});			
 			
+			$('.editPaymentBtn').on('click',function() {
+				$('#editPaymentModal').modal('show');
+				
+				$tr = $(this).closest('tr');
+				var data = $tr.children("td").map(function() {
+					return $(this).text();
+				}).get();
+				
+				
+				$('#paymentModal').val(data[0]);
+				$('#paymentIdModal').val(data[2]);
+				$('#secondPaymentIdModal').val(data[2]);
+				console.log('Wartość data[0]:', data[0]);
+				console.log('Wartość data[2]:', data[2]);
+				console.log('Wartość paymentIdModal:', $('#paymentIdModal').val());
+				console.log('Wartość secondPaymentIdModal:', $('#secondPaymentIdModal').val());
+  
+			});
+			console.log('Wartość paymentIdModal:', $('#paymentIdModal').val());
+			
+			//var userId = '{{ user.id }}';
+			
 		
 			
 			
@@ -83,7 +106,7 @@
 						<div class="col-12 text-center">
 							<h2 class="mb-xl-4">Settings</h2>
 						</div>
-						<button id="settingButton1" class="btn btn-hover no-focus btn-block mt-2" onClick="toggleSettingPanel(this.id,'settingTogglePanel1')">Income categories <i class="fas fa-chevron-down setting-icon"></i></button>
+						<button id="settingButton1" class="btn btn-hover no-focus btn-block mt-2" onClick="toggleSettingPanel(this.id,'settingTogglePanel1')">Income Categories <i class="fas fa-chevron-down setting-icon"></i></button>
 
 						<div id="settingTogglePanel1" class="settingTogglePanel w-100 px-2">
 						
@@ -172,7 +195,7 @@
 							</div>
 						</div>
 						
-            <button id="settingButton2" class="btn btn-hover no-focus  btn-block mt-2" onClick="toggleSettingPanel(this.id,'settingTogglePanel2')">Expense Category <i class="fas fa-chevron-down setting-icon"></i></button>
+            <button id="settingButton2" class="btn btn-hover no-focus  btn-block mt-2" onClick="toggleSettingPanel(this.id,'settingTogglePanel2')">Expense Categories <i class="fas fa-chevron-down setting-icon"></i></button>
 						
 						<div id="settingTogglePanel2" class="settingTogglePanel w-100 px-2">
 						
@@ -254,6 +277,117 @@
 								</div>			
 							</div>
 						</div>
+
+						<button id="settingButton3" class="btn btn-hover no-focus btn-block mt-2" onClick="toggleSettingPanel(this.id,'settingTogglePanel3')">Payments Methods <i class="fas fa-chevron-down setting-icon"></i></button>
+
+						<div id="settingTogglePanel3" class="settingTogglePanel w-100 px-2">
+							
+							<table id="tableOfPayment" class="table table-hover table-active text-white table-sm table-text">
+
+								<thead>	
+									<tr>
+									<th onclick="sortTableAlphabetically('tableOfPayment')" scope="col">Payment Methods <i class="fas fa-sort"></i></th>
+									<th scope="col" width="5%"></th>
+									<th scope="col" style="display:none;">ID</th></tr>
+								</thead>
+								<tbody>
+									{% for payment_method in payment_methods %}
+									<tr class="editPaymentBtn"><td>{{ payment_method.name }}</td>
+									<td><i class="fas fa-edit"></i></td>
+									<td style="display:none;">{{ payment_method.id }}</td></tr>
+								{% endfor %}
+								</tbody>
+							</table>
+
+							<div class="row">
+								<div class="col mb-2">
+									<button class="btn btn-hover no-focus btn-sm btn-block" style="height:30px" data-toggle="modal" data-target="#addPaymentModal">Add a new payment method</button>
+								</div>						
+							</div>
+						</div>
+
+						<div class="modal fade" id="addPaymentModal" tabindex="-1" role="dialog" aria-labelledby="addPaymentMethod" aria-hidden="true" >
+							<div class="modal-dialog" role="document">
+								<div class="modal-content">
+									<div class="modal-header">
+										<h4 id="addPaymentMethod" class="modal-title">Add a new payment method</h4>
+										<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+										  <span aria-hidden="true">&times;</span>
+										</button>
+									</div>
+									<form action="" method="post" id='addPaymentForm'>
+										<div class="modal-body">
+												
+											<input type="hidden" id="secondPaymentIdModal" name="paymentId">
+											<div class="input-group">
+												<div class="input-group-prepend">
+													<span class="input-group-text"><i class="fas fa-money-check"></i></span>
+												</div>
+												<input type="text" class="form-control"  placeholder="Payment Method" maxlength="30" step="any" aria-label="PaymentMethod" name="paymentCategory" required >
+											</div>
+		
+										</div>
+																			
+										<div class="modal-footer">
+											<button formaction="/settings/addPaymentMethod"  type="submit" class="btn btn-hover btn-success">Confirm</button>
+										</div>
+										
+									</form>	
+								</div>
+								
+							</div>
+						</div>	
+
+						<div class="modal fade" id="editPaymentModal" tabindex="-1" role="dialog" aria-labelledby="editPayment" aria-hidden="true" >
+							<div class="modal-dialog" role="document">
+								<div class="modal-content">
+									<div class="modal-header">
+										<h4 id="editPayment" class="modal-title">Edit Payment Method</h4>
+										<!--button type="button" class="close" data-dismiss="modal" aria-label="Close">
+										  <span aria-hidden="true">&times;</span>
+										</!--button>
+									</div>
+									<form action="" method="post" id='editPaymentForm'>
+										<div-- class="modal-body">
+												
+											<input type="hidden" id="paymentIdModal" name="paymentId">
+											<div class="input-group">
+												<div class="input-group-prepend">
+													<span class="input-group-text"><i class="fas fa-money-check"></i></span>
+												</div>
+												<input type="text" id="paymentModal" class="form-control"  placeholder="Payment Method" maxlength="30" step="any" aria-label="paymentMethod" name="paymentCategory" required >
+											</div>
+		
+										</div-->
+
+										<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+										  <span aria-hidden="true">&times;</span>
+										</button>
+									</div>
+									<form action="" method="post" id='addPaymentForm'>
+										<div class="modal-body">
+												
+											<input type="hidden" id="paymentIdModal" name="paymentId">
+											<div class="input-group">
+												<div class="input-group-prepend">
+													<span class="input-group-text"><i class="fas fa-money-check"></i></span>
+												</div>
+												<input type="text"  id="paymentModal" class="form-control"  placeholder="Payment Method" maxlength="30" step="any" aria-label="PaymentMethod" name="paymentCategory" required >
+											</div>
+		
+										</div>
+																			
+										<div class="modal-footer">
+											<button formaction="/settings/updatePaymentMethod"  type="submit" class="btn btn-hover btn-success">Confirm</button>
+											<button type="submit" formaction="/settings/deletePaymentMethod" class="btn btn-hover color-11">Remove</button>
+										</div>
+										
+									</form>	
+								</div>
+								
+							</div>
+						</div>
+
 
     <!--div class="container my-3">
         <header>

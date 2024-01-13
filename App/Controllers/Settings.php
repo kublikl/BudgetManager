@@ -40,7 +40,7 @@ class Settings extends Authenticated
         View::renderTemplate('Settings/settings.html', [
             'user_incomes' => Incomes::getIncomeCategories(),
             'user_expenses' => Expenses::getExpenseCategories(),
-            'payment_method' => Expenses::getPaymentMethods(),
+            'payment_methods' => Expenses::getPaymentMethods(),
 						//'user' => $this->user
             
         ]);
@@ -178,6 +178,73 @@ class Settings extends Authenticated
 
 			$this->redirect('/settings/show');
 		}
-	}		
+	}	
+	
+	public function addPaymentMethod() 
+	{	
+		if(isset($_POST['paymentId'])) {
+			
+			$expense = new Expenses($_POST);
+
+			if($expense->addPaymentMethod()) {
+
+			Flash::addMessage('A new payment method has been added.');
+
+			$this->redirect('/settings/show');
+			} else {
+				
+				Flash::addMessage('The payment method already exists.',Flash::DANGER);	
+					
+				$this->redirect('/settings/show');	
+			}
+			
+		} else {
+			$this->redirect('/settings/show');
+		}
+	}
+
+	public function updatePaymentMethod() 
+	{
+		if(isset($_POST['paymentId'])) {
+			
+			$expense = new Expenses($_POST);
+
+			if ($expense->updatePaymentMethod()) {
+
+				Flash::addMessage('The payment method has been edited.');
+
+				$this->redirect('/settings/show');
+
+			} else {
+					
+				Flash::addMessage('The payment method already exists.',Flash::DANGER);	
+					
+				$this->redirect('/settings/show');
+			} 	
+		} else {
+			$this->redirect('/settings/show');
+		}
+		
+	}	
+
+	public function deletePaymentMethod() 
+	{	
+		
+		
+		if(isset($_POST['paymentId'])) {
+			
+			$expense = new Expenses($_POST);
+
+			$expense->deletePaymentMethod();
+
+			Flash::addMessage('The payment method has been deleted and its transactions have been moved to the "Another" method');
+
+			$this->redirect('/settings/show');
+			
+		} else {
+			$this->redirect('/settings/show');
+		}
+
+	}
 	
 }
