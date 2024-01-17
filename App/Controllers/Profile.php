@@ -5,6 +5,9 @@ namespace App\Controllers;
 use \Core\View;
 use \App\Auth;
 use \App\Flash;
+use \App\Models\Incomes;
+use \App\Models\Expenses;
+use \App\Models\User;
 
 /**
  * Profile controller
@@ -32,42 +35,93 @@ class Profile extends Authenticated
      */
     public function showAction()
     {
-        View::renderTemplate('Profile/show.html', [
+        View::renderTemplate('/Profile/show.html', [
             'user' => $this->user
         ]);
     }
 
-    /**
-     * Show the form for editing the profile
-     *
-     * @return void
-     */
-    public function editAction()
-    {
-        View::renderTemplate('Profile/edit.html', [
-            'user' => $this->user
-        ]);
-    }
+    public function updateProfileData()
+	{
+		if(isset($_POST['name'])) {
+			
+			$user = new User($_POST);
 
-    /**
-     * Update the profile
-     *
-     * @return void
-     */
-    public function updateAction()
-    {
-        if ($this->user->updateProfile($_POST)) {
+			if ($user->updateProfile()) {
 
-            Flash::addMessage('Changes saved');
+				Flash::addMessage('The profile has been edited.');
 
-            $this->redirect('/profile/show');
+				$this->redirect('/profile/show');
 
-        } else {
+			} else {
+					
+				Flash::addMessage('The email address you entered is already taken or is in an incorrect format.',Flash::DANGER);	
+					
+				View::renderTemplate('/Profile/show', [
+				'userIncomes' => Incomes::getIncomeCategories(),
+				'userExpenses' => Expenses::getExpenseCategories(),
+				'paymentMethods' => Expenses::getPaymentMethods(),
+				'user' => $user
+				]);
+					
+			} 	
+		} else {
+			$this->redirect('/Profile/show');
+		}
+	}
+    
+    public function resetAccountTransactions()
+	{
+		if(isset($_POST['resetAccount'])) {
+			
+		Incomes::deleteAllUserIncomes();
+		Expenses::deleteAllUserExpenses();
+		
+		Flash::addMessage('All your transactions have been deleted.');
 
-            View::renderTemplate('Profile/edit.html', [
-                'user' => $this->user
-            ]);
+		$this->redirect('/Profile/show');
+		} else {
+			$this->redirect('/Profile/show');
+		}
+	
+	}
 
-        }
-    }
+    public function changePassword()
+	{
+		if(isset($_POST['password'])) {
+			
+			$user = new User($_POST);
+
+			if ($user->changeUserPassword()) {
+
+				Flash::addMessage('Your password has been changed.');
+
+				$this->redirect('/Profile/show');
+
+			} else {
+					
+				Flash::addMessage('The password could not be changed.',Flash::DANGER);	
+					
+				$this->redirect('/Profile/show');	
+			} 	
+		} else {
+			$this->redirect('/Profile/show');
+		}
+	
+	}
+	public function deleteAccount()
+	{
+		if(isset($_POST['deleteAccount'])) {
+			
+		$user = new User();
+		$user->deleteAccount();
+
+		Auth::logout();
+		
+		$this->redirect('/home/index');
+		} else {
+			$this->redirect('/Profile/show');
+		}
+	
+	}	
+    
 }

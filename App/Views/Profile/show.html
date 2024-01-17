@@ -1,35 +1,305 @@
-{% extends "base.html" %}
+{% extends 'base.html' %}
 
 {% block title %}Profile{% endblock %}
 
 {% block body %}
+<script src="/js/showHidePassword.js"></script>
+<script src="/js/sortTable.js"></script>
+<script>
+    
+		
+    if (typeof jQuery !== 'undefined') {
+        $.validator.addMethod('validPassword',
+            function(value, element, param) {
+                if (value != '') {
+                    if (value.match(/.*[a-z]+.*/i) == null) {
+                        return false;
+                    }
+                    if (value.match(/.*\d+.*/) == null) {
+                        return false;
+                    }
+                }
 
-<section class="Profile">
-    <div class="container my-3">
-        <header>
-            <h1>Your profile</h1>
-            <p>See your account details and edit them if you need.</p>
-        </header>
-        <div class="row g-2">
-            <div class="col-sm-6 mb-4">
-                <table class="table table-bordered table-sm table-hover border border-5">
-                    <tbody>
-                        <tr>
-                            <th scope="row">Name:</td>
-                            <td>{{ user.username }}</td>
-                        </tr>
-                        <tr>
-                            <th scope="row">Email:</td>
-                            <td>{{ user.email }}</td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-            <div class="col-sm-12 my-1">
-                <input class="button" type="button" onclick="window.location.replace('/profile/edit')" value="Edit">
+                return true;
+            },
+            'The password must contain at least 1 letter and 1 number.'
+        );
+} else {
+    console.error('jQuery is not defined!');
+}
+
+    $(document).ready(function() { 
+        var userId = '{{ user.id }}';
+        
+        $('#editProfileForm').validate( {
+            errorClass: 'text-danger',
+            rules: {
+                email: {
+                    required: true,
+                    email: true,
+                    remote: {
+                        url: '/account/validate-email',
+                        data: {
+                            ignore_id: function() {
+                                return userId;
+                            }
+                        }
+                    }
+                },
+                name: {
+                    maxlength: 20
+                }	
+            },
+            messages: {
+                email: {
+                    required: "Pole nie może być puste.",
+                    email: "Prosze wpisać poprawny adres e-mail.",
+                    remote: "Podany adres e-mail jest zajęty."
+                }, 
+                name: {
+                    required: "Pole nie może być puste.",
+                    maxlength: "Imię może mieć długość maksymalnie 20 znaków."
+                }
+            },
+            errorPlacement: function ($error, $element) {
+                var name = $element.attr("name");
+
+                $("#error" + name).append($error);
+            }
+
+        });	
+        
+        $('#editPasswordForm').validate( {
+            errorClass: 'text-danger',
+            rules: {
+
+                password: {
+                    required: true,
+                    minlength: 6,
+                    maxlength: 20,
+                    validPassword: true
+                },
+                oldPassword: {
+                    remote: {
+                        url: '/account/validate-password',
+                        data: {
+                            user_id: function() {
+                                return userId;
+                            }								
+                        }
+                    }
+                }
+            },
+            messages: {
+                password: {
+                    required: "Pole nie może być puste.",
+                    minlength: "Hasło musi składać się z co najmniej 6 znaków.",
+                    maxlength: "Hasło musi składać się z maksymalnie 20 znaków."
+                },					
+                oldPassword: {
+                    required: "Pole nie może być puste.",
+                    remote: "Wprowadzone hasło jest niepoprawne."
+                }
+            },
+            errorPlacement: function ($error, $element) {
+                var name = $element.attr("name");
+
+                $("#error" + name).append($error);
+            }
+
+        });			
+        
+        
+});
+</script>
+
+    {% if user.errors is not empty %}
+        <p>Errors:</p>
+        <ul>
+            {% for error in user.errors %}
+                <li>{{ error }}</li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+
+<main>
+    <div class="row">
+        <div class="main-container py-2 px-3 col-md-8 offset-md-2 col-lg-6 offset-lg-3 my-5">
+            <div class="row">	
+				<div class="welcome-message mt-2 mb-2 mx-2 py-3 px-4 w-100">
+                    <div class="row">
+						<div class="col-12 text-center">
+							<h2 class="mb-xl-4">Your profile</h2>
+                            <p>See your account details and edit them if you need.</p>
+						</div>
+        
+        
+                        <table id="tableOfProfileData" class="table table-hover table-active text-white table-sm table-text">
+                            <tbody>
+                                <tr>
+                                    <th scope="row">Name:</th>
+                                    <td>{{ user.name }}</td>
+                                </tr>
+                                <tr>
+                                    <th scope="row">Email:</td>
+                                    <td>{{ user.email }}</td>
+                                </tr>
+                            </tbody>
+                        </table>
+            
+
+                    <div class="col-6 mb-2">
+                        <button class="btn btn-hover no-focus btn-sm btn-block mt-2" data-toggle="modal" data-target="#editProfileModal" style="height:30px">Edit Profile</button>
+                    </div>
+
+                    <div class="modal fade" id="editProfileModal" tabindex="-1" role="dialog" aria-labelledby="edytujProfil" aria-hidden="true">
+                        <div class="modal-dialog" role="document">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h4 id="edytujProfil" class="modal-title">Edit Profile</h4>
+                                    <button type="button" class="close" data-dismiss="modal" aria-label="Zamknij">
+                                    <span aria-hidden="true">&times;</span>
+                                    </button>
+                                </div>
+                                <form action="/profile/updateProfileData" method="post" id='editProfileForm'>
+                                    <div class="modal-body">
+                                    
+                                        <div class="input-group">
+                                            <div class="input-group-prepend">
+                                                <span class="input-group-text"> <i class="fas fa-user-alt"></i> </span>
+                                            </div>
+                                            <input id="name" type="text" class="form-control" placeholder="Name" aria-label="name" name="name" value="{{ user.name }}" required autofocus>
+                                        </div>
+                                        <small id="errorname"></small>	
+                                        <div class="input-group mt-3">
+                                            <div class="input-group-prepend">
+                                                <span class="input-group-text"> <i class="fas fa-envelope"></i> </span>
+                                            </div>
+                                            <input type="email" class="form-control" placeholder="E-mail" aria-label="email" id ="email" name="email" value="{{ user.email }}" required >
+                                            <input type="hidden" value="{{ user.id }}" name ="id" required >
+                                        </div>	
+                                        <small id="erroremail"></small>													
+                                        
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="submit" class="btn btn-hover btn-success" >Confirm</button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-6 mb-2">
+                        <button class="btn btn-hover no-focus-red btn-sm btn-block mt-2" data-toggle="modal" data-target="#deleteUserDataModal" style="height:30px">Reset Transactions</button>	
+                    </div>
+                    
+                    <div class="modal fade" id="deleteUserDataModal" tabindex="-1" role="dialog" aria-labelledby="resetAccount" aria-hidden="true">
+                        <div class="modal-dialog" role="document">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h4 id="resetAccount" class="modal-title">Reset your transactions</h4>
+                                    <button type="button" class="close" data-dismiss="modal" aria-label="Zamknij">
+                                      <span aria-hidden="true">&times;</span>
+                                    </button>
+                                </div>
+                                <form method="post" action="/profile/resetAccountTransactions">
+                                    <div class="modal-body">
+                                        Are you sure you want to reset all your income and expenses?
+                                        
+                                        <input type="hidden" name="resetAccount">
+                                        
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button  class="btn btn-hover color-8">Confirm</button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>																							
+                </div>
+
+                <div class="row">		
+                    <div class="col-6 mb-2">
+                        <button class="btn btn-hover no-focus btn-sm btn-block mt-2" data-toggle="modal" data-target="#changePasswordModal" style="height:30px">Change Password</button>
+                    </div>
+                
+                    <div class="modal fade" id="changePasswordModal" tabindex="-1" role="dialog" aria-labelledby="changePassword" aria-hidden="true">
+                        <div class="modal-dialog" role="document">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h4 id="changePassword" class="modal-title">Change Password</h4>
+                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                    </button>
+                                </div>
+                                <form method="post" action="/profile/changePassword" id="editPasswordForm">
+                                    <div class="modal-body">
+                                        <div class="input-group mt-3">
+                                            <div class="input-group-prepend">
+                                                <span class="input-group-text"> <i class="fa fa-lock"></i></span>
+                                            </div>
+                                            <input type="password" class="form-control" data-toggle="password" placeholder="Old Password" aria-label="Old Password" id="oldPassword" name="oldPassword" required>	
+
+                                        </div>
+                                        
+                                        <small id="erroroldPassword"></small>
+                                        <span class="error">{{ user.errors.oldpassword }}</span>														
+                                        
+                                        <div class="input-group mt-3">
+                                            <div class="input-group-prepend">
+                                                <span class="input-group-text"> <i class="fa fa-lock"></i></span>
+                                            </div>
+                                            <input type="password" class="form-control" data-toggle="password" placeholder="New Password" aria-label="New Password" id="password" name="password" required>
+                                            <div class="input-group-append" style="cursor:pointer">
+                                                <span class="input-group-text" onclick="myFunction('password')">
+                                                    <i id="showHideIcon" class="fa fa-eye"></i>
+                                                </span>
+                                            </div>
+                                        </div>	
+                                        
+                                        <small id="errorpassword"></small>
+                                        <span class="error">{{ user.errors.password }}</span>												
+                                        
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="submit" class="btn btn-hover color-8">Confirm</button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-6 mb-2">
+                        <button class="btn btn-hover no-focus-red btn-sm btn-block mt-2" data-toggle="modal" data-target="#deleteAccountModal" style="height:30px">Delete Account</button>	
+                    </div>
+                
+                    <div class="modal fade" id="deleteAccountModal" tabindex="-1" role="dialog" aria-labelledby="deleteAccount" aria-hidden="true">
+                        <div class="modal-dialog" role="document">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h4 id="usunKonto" class="modal-title">Delete Account</h4>
+                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                    </button>
+                                </div>
+                                <form method="post" action="/profile/deleteAccount">
+                                    <div class="modal-body">
+                                        Are you sure you want to delete your account and all your data?
+                                
+                                        <input type="hidden" name="deleteAccount">
+                            
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="submit" class="btn btn-hover color-8" >Confirm</button>
+                            
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>			
+                </div>
             </div>
         </div>
     </div>
-</section>
+</main>
 
 {% endblock %}

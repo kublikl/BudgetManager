@@ -64,6 +64,18 @@ class Incomes extends \Core\Model
             return false;
         }
     }
+    public static function getUserIncomeCategories()
+	{
+		$sql = "SELECT name, id FROM incomes_categories_assigned_to_users WHERE user_id = :user_id AND name != :name";
+	
+		$db = static::getDB();
+		$incomeCategories = $db->prepare($sql);
+        $incomeCategories->bindValue(':user_id', $_SESSION['user_id'], PDO::PARAM_INT);
+        $incomeCategories->bindValue(':name', 'Inne', PDO::PARAM_STR);
+		$incomeCategories->execute();
+
+		return $incomeCategories->fetchAll(PDO::FETCH_ASSOC);
+	}
 
     public function validate(){
          //amount
@@ -173,7 +185,15 @@ class Incomes extends \Core\Model
         $stmt->bindValue(':category_id', $category_id, PDO::PARAM_INT);
         return $stmt->execute();
 
-    } 
+    }
+    public static function deleteAllUserIncomes()
+	{
+		$sql = "DELETE FROM incomes WHERE user_id = {$_SESSION['user_id']}";
+								
+		$db = static::getDB();
+		
+		return $db->query($sql);
+	}
     
     public function addIncomeCategory()
 	{	

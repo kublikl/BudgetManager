@@ -125,6 +125,19 @@ class Expenses extends \Core\Model
         
     }
 
+    public static function getUserExpenseCategories()
+	{
+		$sql = "SELECT * FROM expenses_categories_assigned_to_users WHERE user_id = :user_id AND name != :name";
+	
+		$db = static::getDB();
+		$expenseCategories = $db->prepare($sql);
+        $expenseCategories->bindValue(':user_id', $_SESSION['user_id'], PDO::PARAM_INT);
+        $expenseCategories->bindValue(':name', 'Inne', PDO::PARAM_STR);
+		$expenseCategories->execute();
+
+		return $expenseCategories->fetchAll(PDO::FETCH_ASSOC);
+	}	
+
     public static function getPaymentMethods()
     {
         $user = Auth::getUser();
@@ -145,6 +158,18 @@ class Expenses extends \Core\Model
         return [];
 
     }
+    public static function getUserPaymentMethods()
+	{
+		$sql = "SELECT name,id FROM payment_methods_assigned_to_users WHERE user_id = :user_id AND name != :name";
+	
+		$db = static::getDB();
+		$paymentMethods = $db->prepare($sql);
+        $paymentMethods->bindValue(':user_id', $_SESSION['user_id'], PDO::PARAM_INT);
+        $paymentMethods->bindValue(':name', 'Inne', PDO::PARAM_STR);
+		$paymentMethods->execute();
+
+		return $paymentMethods->fetchAll(PDO::FETCH_ASSOC);
+	}
     public static function expensesBalance($user_id, $minDate, $maxDate) {
         $sql = 'SELECT `name`, SUM(`amount`) AS sumOfExpense FROM `expenses`, `expenses_category_assigned_to_users`
         WHERE `expenses`.`expense_category_assigned_to_user_id`=`expenses_category_assigned_to_users`.`id` AND `expenses`.`user_id` = :user_id
@@ -461,6 +486,15 @@ class Expenses extends \Core\Model
 
 		return $stmt->execute();
         
+	}
+
+    public static function deleteAllUserExpenses()
+	{
+		$sql = "DELETE FROM expenses WHERE user_id = {$_SESSION['user_id']}";
+								
+		$db = static::getDB();
+		
+		return $db->query($sql);
 	}
     
 }

@@ -26,6 +26,8 @@ class User extends \Core\Model
     public $activation_token;
     public $activation_hash;
     public $is_active;
+    public $oldPassword;
+   // public $user;
     
    
 
@@ -420,6 +422,7 @@ class User extends \Core\Model
      *
      * @return boolean  True if the data was updated, false otherwise
      */
+    /*
     public function updateProfile($data)
     {
         $this->name = $data['name'];
@@ -466,7 +469,7 @@ class User extends \Core\Model
 
         return false;
     }
-
+    */
     /**
      * Download categories assigned to the logged in user from the database
      *
@@ -545,4 +548,111 @@ class User extends \Core\Model
         $stmtUpdate->bindParam(':user_id', $user_id, PDO::PARAM_INT);
         $stmtUpdate->execute();
      }
+
+     public function updateProfile()
+     {
+         $this->validateNameAndEmail();
+         
+ 
+         if (empty($this->errors)) {
+             
+ 
+             $sql = 'UPDATE users SET name = :name, email = :email WHERE id = :user_id';
+ 
+             $db = static::getDB();
+             $stmt = $db->prepare($sql);
+ 
+             $stmt->bindValue(':name', $this->name, PDO::PARAM_STR);
+             $stmt->bindValue(':email', $this->email, PDO::PARAM_STR);
+             $stmt->bindValue(':user_id', $_SESSION['user_id'], PDO::PARAM_INT);
+             
+             $results = $stmt->execute();
+ 
+             return $results;
+         }
+ 
+         return false;
+     }
+     protected function validateNameAndEmail() 
+     {
+         // Name
+         if ($this->name == '') {
+             $this->errors['name'] = 'Wprowadź imię.';
+         }
+ 
+         // email address
+         if (filter_var($this->email, FILTER_VALIDATE_EMAIL) === false) {
+             $this->errors['email'] = 'Podaj poprawny adres e-mail.';
+         }
+         if (static::emailExists($this->email, $this->id ?? null)) {
+             $this->errors['email'] = 'Istnieje konto o podanym adresie e-mail.';
+         }		
+     }
+     public function changeUserPassword()
+    {
+        var_dump($_SESSION['user_id']);
+        var_dump($this->oldPassword);
+        //var_dump($this->$user->password);
+        //var_dump($this->oldPassword);
+        
+        $this->validatePassword();
+		
+		$is_valid = static::validateOldPassword($this->oldPassword,$_SESSION['user_id']);
+		
+
+        if (empty($this->errors)) {
+
+            $password_hash = password_hash($this->password, PASSWORD_DEFAULT);
+
+            $sql = 'UPDATE users SET password_hash = :new_password_hash WHERE id = :id';
+
+            $db = static::getDB();
+            $stmt = $db->prepare($sql);
+
+
+            $stmt->bindValue(':new_password_hash', $password_hash, PDO::PARAM_STR);
+			$stmt->bindValue(':id', $_SESSION['user_id'], PDO::PARAM_INT);
+			
+			$results = $stmt->execute();
+			
+            return $results;
+        }
+
+        return false;
+    }
+    public static function validateOldPassword($password,$userId)
+    {
+		$user = static::findByID($userId);
+
+        if ($user) {
+            if (password_verify($password, $user->password_hash)) {
+                return true;
+            }
+        }
+		
+        return false;
+    }
+    protected function validatePassword() 
+	{
+		if (preg_match('/(?=.*?[0-9])(?=.*?[A-Za-z]).+/', $this->password) == 0) {
+			$this->errors['password'] = 'Hasło musi posiadać przynajmniej 1 literę i 1 cyfrę.';
+		}
+		
+		if (strlen($this->password) < 6 || strlen($this->password) > 20) {
+			$this->errors['password'] = 'Hasło musi posiadać od 6 do 20 znaków.';
+		}
+	}
+
+    public function deleteAccount()
+    {
+        	$sql = 'DELETE FROM users WHERE id = :user_id';
+
+            $db = static::getDB();
+            $stmt = $db->prepare($sql);
+
+			$stmt->bindValue(':user_id', $_SESSION['user_id'], PDO::PARAM_INT);
+			
+			$stmt->execute();
+			
+    }
 }
