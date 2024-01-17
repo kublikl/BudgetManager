@@ -223,28 +223,6 @@
                             
                             {% endif %}
 
-                            <!--div class="col-6 col-sm-6 mb-4 p-2">
-                                <div id="chartContainerIncomes" style="height: 370px; width: 100%; float: left; margin-right: 5px;">
-                                    {% if user_incomes is not empty %}
-                                    <script src="https://canvasjs.com/assets/script/canvasjs.min.js"></script>
-                                </div>
-                                {% else %}
-                                <h4><span style="color: red">You have no incomes in selected period!</span></h4>
-                                {% endif %}
-                
-                
-                                {% if user_expenses is not empty %}
-                                <div id="chartContainerExpenses" style="height: 370px; width: 100%; margin-left: 5px;">
-                
-                                    <script src="https://canvasjs.com/assets/script/canvasjs.min.js"></script>
-                                </div>
-                                {% else %}
-                                <div class="col-12 col-sm-12 mb-6 p-6">
-                                <h4><span style="color: red">You have no expenses in selected period!</span></h4>
-                                </div>
-                                {% endif %}-->
-
-                            </!--div>
                             <div class=""col-sm-12" style="justify-content: center; display: flex;">
                                 {% if sumExpenses < sumIncomes %} <h4><span style="color: rgb(255, 255, 255);"">Difference between incomes and expenses:  {{sumIncomes - sumExpenses}} PLN </span></h4>
                                 {% else %}

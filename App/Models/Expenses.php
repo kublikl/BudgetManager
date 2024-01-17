@@ -3,9 +3,7 @@
 namespace App\Models;
 
 use PDO;
-use \Core\View;
 use \App\Auth;
-use \Exception;
 
 class Expenses extends \Core\Model
 {
@@ -15,7 +13,6 @@ class Expenses extends \Core\Model
   public $comment;
   public $user_id;
   public $payment;
- // public $paymentMethod;
   public $payment_method;
   public $newExpenseCategory;
   public $expenseCategory;
@@ -95,17 +92,6 @@ class Expenses extends \Core\Model
     }
     public static function getExpenseCategories()
     {
-        /*
-        $user_id['id'] = Auth::getUser();
-        $sql = 'SELECT * FROM expenses_category_assigned_to_users WHERE user_id=:user_id';
-        $db = static::getDB();
-        $stmt = $db->prepare($sql);
-
-        $stmt->bindValue(':user_id', $user_id, PDO::PARAM_INT);
-        $stmt->execute();
-        return $stmt->fetchAll();
-        */
-        
             $user = Auth::getUser();
     
             if ($user) {
@@ -291,7 +277,6 @@ class Expenses extends \Core\Model
         
     }
 
-    	
     public function deleteCategory()
 	{	
   
@@ -387,22 +372,6 @@ class Expenses extends \Core\Model
 		
 		return true;			
 	}
-
-    
-/*
-    public static function deletePaymentMethod($payment_id)
-	{	
-        $sql = 'DELETE FROM payment_methods_assigned_to_users
-            WHERE id = :payment_id';
-
-        $db = static::getDB();
-        $stmt = $db->prepare($sql);
-        $stmt->bindValue(':payment_id', $payment_id, PDO::PARAM_INT);
-      
-        return $stmt->execute();
-        
-    }
-        */
 
     public function deletePaymentMethod()
     {

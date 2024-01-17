@@ -7,7 +7,6 @@ use \App\Auth;
 use \Core\View;
 use \App\Flash;
 use \App\Models\Incomes;
-use \App\Models\User;
 use \App\Models\Expenses;
 
 /**

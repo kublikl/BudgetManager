@@ -5,8 +5,6 @@ namespace App\Controllers;
 use \Core\View;
 use \App\Models\Incomes;
 use \App\Models\Expenses;
-use \App\Flash;
-use \App\Auth;
 use \App\Dates;
 
 
@@ -40,7 +38,6 @@ class Balance extends \Core\Controller
         $error_date = Dates::checkRange($minDate, $maxDate);
 
         $user_incomes = Incomes::incomesBalance($user_id, $minDate, $maxDate);
-        //var_dump($user_incomes);
         $user_expenses = Expenses::expensesBalance($user_id, $minDate, $maxDate);
         $_SESSION['user_incomes'] = $user_incomes;
         $dataPointsIncomes = Incomes::getdataPointsIncomes($user_incomes);

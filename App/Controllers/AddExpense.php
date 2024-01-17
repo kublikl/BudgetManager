@@ -3,10 +3,8 @@
 namespace App\Controllers;
 
 use \Core\View;
-use \App\Models\User;
 use \App\Flash;
 use \App\Models\Expenses;
-use \App\Auth;
 
 /**
  * AddExpense controller

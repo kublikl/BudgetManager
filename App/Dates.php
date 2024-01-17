@@ -8,12 +8,10 @@ class Dates {
 
     public static function getMinMaxDate($period, $currentMonth, $current_year)
     {
-        //$instance = new self(); //Create an instance of a class to access its methods
         
         if ($period == 'currentM') {
 
-           // $leapyear = $instance->isLeapYear($current_year);
-          //  $last_day = $instance->checkDaysOfMonth($leapyear, $currentMonth);
+
             $leapyear = static::isLeapYear($current_year);
             $last_day = static::checkDaysOfMonth($leapyear, $currentMonth);
 

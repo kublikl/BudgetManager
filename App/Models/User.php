@@ -6,7 +6,6 @@ use PDO;
 use \App\Token;
 use \App\Mail;
 use \Core\View;
-use \App\Auth;
 
 /**
  * User model
@@ -27,7 +26,7 @@ class User extends \Core\Model
     public $activation_hash;
     public $is_active;
     public $oldPassword;
-   // public $user;
+   
     
    
 
@@ -415,83 +414,6 @@ class User extends \Core\Model
         $stmt->execute();
     }
     
-    /**
-     * Update the user's profile
-     *
-     * @param array $data Data from the edit profile form
-     *
-     * @return boolean  True if the data was updated, false otherwise
-     */
-    /*
-    public function updateProfile($data)
-    {
-        $this->name = $data['name'];
-        $this->email = $data['email'];
-
-        // Only validate and update the password if a value provided
-        if ($data['password'] != '') {
-            $this->password = $data['password'];
-        }
-
-        $this->validate();
-
-        if (empty($this->errors)) {
-
-            $sql = 'UPDATE users
-                    SET name = :name,
-                        email = :email';
-
-            // Add password if it's set
-            if (isset($this->password)) {
-                $sql .= ', password_hash = :password_hash';
-            }
-
-            $sql .= "\nWHERE id = :id";
-
-
-            $db = static::getDB();
-            $stmt = $db->prepare($sql);
-
-            $stmt->bindValue(':name', $this->name, PDO::PARAM_STR);
-            $stmt->bindValue(':email', $this->email, PDO::PARAM_STR);
-            $stmt->bindValue(':id', $this->id, PDO::PARAM_INT);
-
-            // Add password if it's set
-            if (isset($this->password)) {
-
-                $password_hash = password_hash($this->password, PASSWORD_DEFAULT);
-                $stmt->bindValue(':password_hash', $password_hash, PDO::PARAM_STR);
-
-            }
-
-            return $stmt->execute();
-        }
-
-        return false;
-    }
-    */
-    /**
-     * Download categories assigned to the logged in user from the database
-     *
-     * @return void
-     */
-    
-    /**
-     * Download  all categories for user from the database
-     *
-     * @return void
-     */
-        /*
-    public static function getCategories()
-     {
-
-        $sql = 'SELECT * FROM incomes_category_default';
-                $db = static::getDB();
-                $stmt = $db->prepare($sql);
-                $stmt->execute();
-                return $stmt->fetchAll();
-     }
-     */
 
      public static function getNewUserId()
      {
@@ -499,7 +421,6 @@ class User extends \Core\Model
          $db = static::getDB();
          $stmt = $db->prepare($sql);
          $stmt->execute();
-       // return $stmt->fetchAll();
         
           $user = $stmt->fetch();
           $user_id = $user['id'];
@@ -592,8 +513,6 @@ class User extends \Core\Model
     {
         var_dump($_SESSION['user_id']);
         var_dump($this->oldPassword);
-        //var_dump($this->$user->password);
-        //var_dump($this->oldPassword);
         
         $this->validatePassword();
 		
