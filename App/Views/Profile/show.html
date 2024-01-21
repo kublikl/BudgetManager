@@ -2,7 +2,8 @@
 
 {% block title %}Profile{% endblock %}
 
-{% block body %}
+
+{% block footer %}
 <script src="/js/showHidePassword.js"></script>
 <script src="/js/sortTable.js"></script>
 <script>
@@ -52,13 +53,13 @@
             },
             messages: {
                 email: {
-                    required: "Pole nie może być puste.",
-                    email: "Prosze wpisać poprawny adres e-mail.",
-                    remote: "Podany adres e-mail jest zajęty."
+                    required: "The field cannot be empty.",
+                    email: "Please enter a valid email address.",
+                    remote: "The email address you provided is taken."
                 }, 
                 name: {
-                    required: "Pole nie może być puste.",
-                    maxlength: "Imię może mieć długość maksymalnie 20 znaków."
+                    required: "The field cannot be empty.",
+                    maxlength: "The name can be up to 20 characters long."
                 }
             },
             errorPlacement: function ($error, $element) {
@@ -92,13 +93,13 @@
             },
             messages: {
                 password: {
-                    required: "Pole nie może być puste.",
-                    minlength: "Hasło musi składać się z co najmniej 6 znaków.",
-                    maxlength: "Hasło musi składać się z maksymalnie 20 znaków."
+                    required: "The field cannot be empty.",
+                    minlength: "The password must consist of at least 6 characters.",
+                    maxlength: "The password must be a maximum of 20 characters."
                 },					
                 oldPassword: {
-                    required: "Pole nie może być puste.",
-                    remote: "Wprowadzone hasło jest niepoprawne."
+                    required: "The field cannot be empty.",
+                    remote: "The password you entered is incorrect."
                 }
             },
             errorPlacement: function ($error, $element) {
@@ -112,6 +113,8 @@
         
 });
 </script>
+{% endblock %}
+{% block body %}
 
     {% if user.errors is not empty %}
         <p>Errors:</p>

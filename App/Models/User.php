@@ -511,15 +511,15 @@ class User extends \Core\Model
      }
      public function changeUserPassword()
     {
-        var_dump($_SESSION['user_id']);
-        var_dump($this->oldPassword);
+       // var_dump($_SESSION['user_id']);
+       // var_dump($this->oldPassword);
         
         $this->validatePassword();
 		
 		$is_valid = static::validateOldPassword($this->oldPassword,$_SESSION['user_id']);
 		
 
-        if (empty($this->errors)) {
+        if (empty($this->errors) && $is_valid) {
 
             $password_hash = password_hash($this->password, PASSWORD_DEFAULT);
 
