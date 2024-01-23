@@ -6,12 +6,9 @@ use PDO;
 use \App\Token;
 use \App\Mail;
 use \Core\View;
-use \App\Auth;
 
 /**
  * User model
- *
- * PHP version 7.0
  */
 class User extends \Core\Model
 {
@@ -28,6 +25,8 @@ class User extends \Core\Model
     public $activation_token;
     public $activation_hash;
     public $is_active;
+    public $oldPassword;
+   
     
    
 
@@ -415,82 +414,6 @@ class User extends \Core\Model
         $stmt->execute();
     }
     
-    /**
-     * Update the user's profile
-     *
-     * @param array $data Data from the edit profile form
-     *
-     * @return boolean  True if the data was updated, false otherwise
-     */
-    public function updateProfile($data)
-    {
-        $this->name = $data['name'];
-        $this->email = $data['email'];
-
-        // Only validate and update the password if a value provided
-        if ($data['password'] != '') {
-            $this->password = $data['password'];
-        }
-
-        $this->validate();
-
-        if (empty($this->errors)) {
-
-            $sql = 'UPDATE users
-                    SET name = :name,
-                        email = :email';
-
-            // Add password if it's set
-            if (isset($this->password)) {
-                $sql .= ', password_hash = :password_hash';
-            }
-
-            $sql .= "\nWHERE id = :id";
-
-
-            $db = static::getDB();
-            $stmt = $db->prepare($sql);
-
-            $stmt->bindValue(':name', $this->name, PDO::PARAM_STR);
-            $stmt->bindValue(':email', $this->email, PDO::PARAM_STR);
-            $stmt->bindValue(':id', $this->id, PDO::PARAM_INT);
-
-            // Add password if it's set
-            if (isset($this->password)) {
-
-                $password_hash = password_hash($this->password, PASSWORD_DEFAULT);
-                $stmt->bindValue(':password_hash', $password_hash, PDO::PARAM_STR);
-
-            }
-
-            return $stmt->execute();
-        }
-
-        return false;
-    }
-
-    /**
-     * Download categories assigned to the logged in user from the database
-     *
-     * @return void
-     */
-    
-    /**
-     * Download  all categories for user from the database
-     *
-     * @return void
-     */
-        /*
-    public static function getCategories()
-     {
-
-        $sql = 'SELECT * FROM incomes_category_default';
-                $db = static::getDB();
-                $stmt = $db->prepare($sql);
-                $stmt->execute();
-                return $stmt->fetchAll();
-     }
-     */
 
      public static function getNewUserId()
      {
@@ -498,7 +421,6 @@ class User extends \Core\Model
          $db = static::getDB();
          $stmt = $db->prepare($sql);
          $stmt->execute();
-       // return $stmt->fetchAll();
         
           $user = $stmt->fetch();
           $user_id = $user['id'];
@@ -507,42 +429,26 @@ class User extends \Core\Model
 
      public static function copyIncomesCategories($user_id)
      {
-         //$user_id = self::getNewUserId();
-         $sql = 'INSERT INTO incomes_category_assigned_to_users (name) SELECT name FROM incomes_category_default';
-         $db = static::getDB();
-         //$db->exec($sql);
-         $stmt = $db->prepare($sql);
- 
-         $sql = 'UPDATE incomes_category_assigned_to_users SET `user_id`= :user_id  ORDER BY id DESC LIMIT 4';
-         $db = static::getDB();
-         $stmt = $db->prepare($sql);
-         $stmt->bindParam(':user_id', $user_id, PDO::PARAM_INT); 
-         $stmt->execute();
+
+        $sqlInsert = 'INSERT INTO incomes_category_assigned_to_users (user_id, name) SELECT :user_id, name FROM incomes_category_default';
+        $db = static::getDB();
+        $stmtInsert = $db->prepare($sqlInsert);
+        $stmtInsert->bindParam(':user_id', $user_id, PDO::PARAM_INT);
+        $stmtInsert->execute();
+    
+        $sqlUpdate = 'UPDATE incomes_category_assigned_to_users SET user_id = :user_id ORDER BY id DESC LIMIT 4';
+        $stmtUpdate = $db->prepare($sqlUpdate);
+        $stmtUpdate->bindParam(':user_id', $user_id, PDO::PARAM_INT);
+        $stmtUpdate->execute();
      }
 
      public static function copyExpensesCategories($user_id)
      {
-        /*
-         $sql = 'INSERT INTO expenses_category_assigned_to_users (name) SELECT name FROM expenses_category_default';
-         $db = static::getDB();
-         //$db->exec($sql);
-         $stmt = $db->prepare($sql);
- 
-         $sql = 'UPDATE expenses_category_assigned_to_users SET `user_id`= :user_id  ORDER BY id DESC LIMIT 16';
-         $db = static::getDB();
-         $stmt = $db->prepare($sql);
-         $stmt->bindParam(':user_id', $user_id, PDO::PARAM_INT); 
-         $stmt->execute();
-         */
-
-         
          $sqlInsert = 'INSERT INTO expenses_category_assigned_to_users (user_id, name) SELECT :user_id, name FROM expenses_category_default';
          $db = static::getDB();
          $stmtInsert = $db->prepare($sqlInsert);
          $stmtInsert->bindParam(':user_id', $user_id, PDO::PARAM_INT);
          $stmtInsert->execute();
-     
-         // Dodatkowa logika, jeśli potrzebna
      
          $sqlUpdate = 'UPDATE expenses_category_assigned_to_users SET user_id = :user_id ORDER BY id DESC LIMIT 16';
          $stmtUpdate = $db->prepare($sqlUpdate);
@@ -552,15 +458,120 @@ class User extends \Core\Model
 
      public static function copyPaymentMethods($user_id)
      {
-         $sql = 'INSERT INTO payment_methods_assigned_to_users (name) SELECT name FROM payment_methods_default';
-         $db = static::getDB();
-         //$db->exec($sql);
-         $stmt = $db->prepare($sql);
- 
-         $sql = 'UPDATE payment_methods_assigned_to_users SET `user_id`= :user_id  ORDER BY id DESC LIMIT 3';
-         $db = static::getDB();
-         $stmt = $db->prepare($sql);
-         $stmt->bindParam(':user_id', $user_id, PDO::PARAM_INT); 
-         $stmt->execute();
+        $sqlInsert = 'INSERT INTO payment_methods_assigned_to_users (user_id, name) SELECT :user_id, name FROM payment_methods_default';
+        $db = static::getDB();
+        $stmtInsert = $db->prepare($sqlInsert);
+        $stmtInsert->bindParam(':user_id', $user_id, PDO::PARAM_INT);
+        $stmtInsert->execute();
+    
+        $sqlUpdate = 'UPDATE payment_methods_assigned_to_users SET user_id = :user_id ORDER BY id DESC LIMIT 3';
+        $stmtUpdate = $db->prepare($sqlUpdate);
+        $stmtUpdate->bindParam(':user_id', $user_id, PDO::PARAM_INT);
+        $stmtUpdate->execute();
      }
+
+     public function updateProfile()
+     {
+         $this->validateNameAndEmail();
+         
+ 
+         if (empty($this->errors)) {
+             
+ 
+             $sql = 'UPDATE users SET name = :name, email = :email WHERE id = :user_id';
+ 
+             $db = static::getDB();
+             $stmt = $db->prepare($sql);
+ 
+             $stmt->bindValue(':name', $this->name, PDO::PARAM_STR);
+             $stmt->bindValue(':email', $this->email, PDO::PARAM_STR);
+             $stmt->bindValue(':user_id', $_SESSION['user_id'], PDO::PARAM_INT);
+             
+             $results = $stmt->execute();
+ 
+             return $results;
+         }
+ 
+         return false;
+     }
+     protected function validateNameAndEmail() 
+     {
+         // Name
+         if ($this->name == '') {
+             $this->errors['name'] = 'Wprowadź imię.';
+         }
+ 
+         // email address
+         if (filter_var($this->email, FILTER_VALIDATE_EMAIL) === false) {
+             $this->errors['email'] = 'Podaj poprawny adres e-mail.';
+         }
+         if (static::emailExists($this->email, $this->id ?? null)) {
+             $this->errors['email'] = 'Istnieje konto o podanym adresie e-mail.';
+         }		
+     }
+     public function changeUserPassword()
+    {
+       // var_dump($_SESSION['user_id']);
+       // var_dump($this->oldPassword);
+        
+        $this->validatePassword();
+		
+		$is_valid = static::validateOldPassword($this->oldPassword,$_SESSION['user_id']);
+		
+
+        if (empty($this->errors) && $is_valid) {
+
+            $password_hash = password_hash($this->password, PASSWORD_DEFAULT);
+
+            $sql = 'UPDATE users SET password_hash = :new_password_hash WHERE id = :id';
+
+            $db = static::getDB();
+            $stmt = $db->prepare($sql);
+
+
+            $stmt->bindValue(':new_password_hash', $password_hash, PDO::PARAM_STR);
+			$stmt->bindValue(':id', $_SESSION['user_id'], PDO::PARAM_INT);
+			
+			$results = $stmt->execute();
+			
+            return $results;
+        }
+
+        return false;
+    }
+    public static function validateOldPassword($password,$userId)
+    {
+		$user = static::findByID($userId);
+
+        if ($user) {
+            if (password_verify($password, $user->password_hash)) {
+                return true;
+            }
+        }
+		
+        return false;
+    }
+    protected function validatePassword() 
+	{
+		if (preg_match('/(?=.*?[0-9])(?=.*?[A-Za-z]).+/', $this->password) == 0) {
+			$this->errors['password'] = 'Hasło musi posiadać przynajmniej 1 literę i 1 cyfrę.';
+		}
+		
+		if (strlen($this->password) < 6 || strlen($this->password) > 20) {
+			$this->errors['password'] = 'Hasło musi posiadać od 6 do 20 znaków.';
+		}
+	}
+
+    public function deleteAccount()
+    {
+        	$sql = 'DELETE FROM users WHERE id = :user_id';
+
+            $db = static::getDB();
+            $stmt = $db->prepare($sql);
+
+			$stmt->bindValue(':user_id', $_SESSION['user_id'], PDO::PARAM_INT);
+			
+			$stmt->execute();
+			
+    }
 }

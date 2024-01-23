@@ -3,8 +3,6 @@
 namespace App\Controllers;
 
 use \Core\View;
-use \App\Models\User;
-use \App\Auth;
 use \App\Flash;
 use \App\Models\Incomes;
 /**
@@ -20,10 +18,6 @@ class AddIncome extends \Core\Controller
         $this->requireLogin(); //access to this page only with login status
 
         View::renderTemplate('AddIncome/new.html');
-       /* , [
-            'category' => Incomes::getIncomeCategories()
-            ]); 
- */
 
     }
 
@@ -35,13 +29,6 @@ class AddIncome extends \Core\Controller
             View::renderTemplate('AddIncome/new.html' , [
                 'income_category' => Incomes::getIncomeCategories()
             ]);
-        
-        
-        
-            /*}else{
-            View::renderTemplate('AddIncome/new.html', [
-                'incomes' => $income
-              ]);*/
         }
     }
 }
