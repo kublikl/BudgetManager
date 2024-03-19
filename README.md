@@ -1,3 +1,12 @@
+Hello, you can open my application via the link below
+
+https://budget.lukasz-kublik.profesjonalnyprogramista.pl/
+
+Guest account:
+mail: test123@test123.com
+password: test123
+
+
 # Welcome to the PHP MVC framework
 
 This is a simple MVC framework for building web applications in PHP. It's free and [open-source](LICENSE).
