@@ -60,7 +60,8 @@
 				}).get();
 				
 				$('#expenseCategoryModal').val(data[0]);
-				$('#expenseCategoryIdModal').val(data[2]);
+				$('#expenseLimitModal').val(data[1]);
+				$('#expenseCategoryIdModal').val(data[3]);
 			});			
 			
 			$('.editPaymentBtn').on('click',function() {
@@ -204,12 +205,14 @@
 								<thead>	
 									<tr>
 									<th onclick="sortTableAlphabetically('tableOfExpensesCategories')" scope="col">Category <i class="fas fa-sort"></i></th>
+									<th scope="col" onclick="sortTableNumerically('tableOfExpensesCategories')">Limit <i class="fas fa-sort"></i></th>
 									<th scope="col"  width="5%"></th>
 									<th scope="col" style="display:none;">ID</th></tr>
 								</thead>
 								<tbody>
 									{% for user_expenses in user_expenses %}
 									<tr class="editExpenseBtn"><td>{{ user_expenses.name }}</td>
+									<td>{{ user_expenses.category_limit }}</td>
 									<td><i class="fas fa-edit"></i></td>
 									<td style="display:none;">{{ user_expenses.id }}</td></tr>
 								{% endfor %}
@@ -265,6 +268,13 @@
 													<span class="input-group-text"><i class="fas fa-shopping-cart"></i></span>
 												</div>
 												<input type="text" id="expenseCategoryModal" class="form-control"  placeholder="Expense Category" maxlength="40" step="any" aria-label="expenseCategory" name="expenseCategory" required >
+											</div>								
+
+											<div class="input-group">
+												<div class="input-group-prepend">
+													<span class="input-group-text"><i class="fas fa-angle-double-up"></i></span>
+												</div>
+												<input type="number" id="expenseLimitModal" class="form-control" step="any" min="0" max="999999.99"  placeholder="Limit (optional)" aria-label="expenseLimit" name="amount" >
 											</div>											
 										</div>
 																			
