@@ -233,7 +233,7 @@ class Expenses extends \Core\Model
 
 		if (empty($this->errors)) {
 			
-			$sql = "INSERT INTO expenses_category_assigned_to_users VALUES (NULL, :user_id, :name)";
+			$sql = "INSERT INTO expenses_category_assigned_to_users VALUES (NULL, :user_id, :name, NULL)";
 									
 			$db = static::getDB();
             $stmt = $db->prepare($sql);
