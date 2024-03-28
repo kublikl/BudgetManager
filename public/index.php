@@ -38,5 +38,7 @@ $router->add('signup/activate/{token:[\da-f]+}', ['controller' => 'Signup', 'act
 $router->add('addIncome', ['controller' => 'AddIncome', 'action' => 'new']);
 $router->add('settings', ['controller' => 'Settings', 'action' => 'show']);
 $router->add('{controller}/{action}');
+$router->add('api/limit/{id:[\d]+}', ['controller' => 'AddExpense', 'action' => 'limitAction']);
+$router->add('api/total/{id:[\d]+}', ['controller' => 'AddExpense', 'action' => 'totalAction']);
 
 $router->dispatch($_SERVER['QUERY_STRING']);
